@@ -847,7 +847,8 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
 
     temp_da        : xr.DataArray dim 'year' (annual means, see annual_series), single config
     highlight_year : dotted vertical line (Phase 1: CHECKPOINT)
-    final          : add the summary marks: the peak (show_peak) and the centred-mean bar (centred)
+    final          : add the summary marks: the 20-year-mean bars of the peak and of
+                     ESTIMATE_WINDOW (show_peak) and the centred-mean bar (centred)
     centred        : (mean, lo, hi) of the CENTRED_WINDOW mean: solid over the known years,
                      dashed and shaded over the projected ones. Extends the x axis.
     """
@@ -947,28 +948,37 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
         ]
 
     if final and show_peak:
-        # The peak is judged on the 20-year centred mean (see LONG_TERM_YEARS), drawn as its own
-        # line at the window centres Y.0 so the marker sits on it, not on a single warm year.
-        last_centre = min(year_end, int(years.max()) - (LONG_TERM_YEARS // 2 - 1))
-        # From the first window that lies wholly in the simulated years (2026 onwards)
-        centres = np.arange(ANIM_START + LONG_TERM_YEARS // 2, last_centre + 1)
-        running = pd.DataFrame({'x': centres.astype(float),
-                                'T': [_centred_mean(temp_da, int(c)) for c in centres],
-                                'sarja': t('series_long_term')})
+        # Phase 2 summary bars, in the style of the 2040 bar: the 20-year mean around the peak
+        # (the verdict, see LONG_TERM_YEARS) and around ESTIMATE_YEAR (the reveal). Both are means
+        # of the drawn member's own FaIR run, nothing projected, so they are drawn solid. A bar
+        # covers its annual years, i.e. x from the first year to one past the last.
         peak_temp, peak_year = _long_term_peak(temp_da)
-        peak = pd.DataFrame({'x': [float(peak_year)], 'T': [peak_temp],
-                             'nimi': [t('peak_label', value=_num(peak_temp, 2), year=peak_year)]})
-        layers += [
-            alt.Chart(running).mark_line(strokeWidth=2.5, clip=True).encode(
-                x=x_enc, y=y_enc,
-                color=alt.Color('sarja:N', scale=alt.Scale(domain=[t('series_long_term')],
-                                                          range=[CENTRED_COLOR]),
-                                legend=alt.Legend(title=None, orient='bottom-right', labelLimit=0))),
-            alt.Chart(peak).mark_rule(strokeDash=[2, 3], color=OBS_COLOR).encode(x=x_enc),
-            alt.Chart(peak).mark_point(size=90, filled=True, color=CENTRED_COLOR).encode(x=x_enc, y=y_enc),
-            alt.Chart(peak).mark_text(align='left', dx=8, dy=-10, fontSize=13, fontWeight='bold',
-                                      color=CENTRED_COLOR).encode(x=x_enc, y=y_enc, text='nimi:N'),
+        peak_first, peak_last = _centred_window(peak_year)
+        estimate_temp = _centred_mean(temp_da, ESTIMATE_YEAR)
+        bars = pd.DataFrame({
+            'x': [peak_first, ESTIMATE_WINDOW[0]],
+            'x2': [peak_last + 1, ESTIMATE_WINDOW[1] + 1],
+            'T': [peak_temp, estimate_temp],
+            'nimi': [t('peak_label', first=peak_first, last=peak_last, value=_num(peak_temp, 2)),
+                     t('mean_label', first=ESTIMATE_WINDOW[0], last=ESTIMATE_WINDOW[1],
+                       value=_num(estimate_temp, 2))],
+        })
+        layers.append(alt.Chart(bars).mark_rule(strokeWidth=4, color=CENTRED_COLOR).encode(
+            x=x_enc, x2='x2:Q', y=y_enc))
+        # Labels go where the line is not: above the peak bar, ending at its right end (inside
+        # the plot, clear of the impact labels in the right margin). Below the 2090-2109 bar,
+        # on the side the line leaves empty: right of the bar while warming still rises after
+        # 2100 (the line comes from below left), left of it once the peak is past.
+        rising = peak_year > ESTIMATE_YEAR
+        labels = [
+            (bars.iloc[[0]], 'x2', 'right', -16),
+            (bars.iloc[[1]], 'x2' if rising else 'x', 'left' if rising else 'right', 16),
         ]
+        for label, x_field, align, dy in labels:
+            layers.append(alt.Chart(label).mark_text(
+                align=align, dx=4 if align == 'left' else -4, dy=dy, fontSize=13,
+                fontWeight='bold', color=CENTRED_COLOR).encode(
+                x=alt.X(f'{x_field}:Q', scale=x_scale, axis=None), y=y_enc, text='nimi:N'))
 
     if final and centred is not None:
         # The bar covers annual years CENTRED_WINDOW, i.e. x from its first year to one past
@@ -1455,7 +1465,8 @@ def _screen_phase2():
     single_max_yr = int(after_chk.year.values[after_chk.values.argmax()])
 
     sim_end = int(temp2.year.max())
-    display_end = min(peak_yr + 30, sim_end)
+    # Show the peak bar with some years after it, and always the whole ESTIMATE_WINDOW bar
+    display_end = min(max(peak_yr + 30, ESTIMATE_WINDOW[1] + 10), sim_end)
 
     st.subheader(t('p2_results'))
     netzero_key = '-'.join(str(netzero_years[r]) for r in REGION_EMISSIONS_BASE_GTCO2)

@@ -111,16 +111,16 @@ TEXTS = {
     # --- temperature chart ---
     'series_obs': {'fi': 'Havaittu', 'en': 'Observed'},
     'series_model': {'fi': 'Ilmastomalli', 'en': 'Climate model'},
-    'series_long_term': {'fi': '20 vuoden keskiarvo', 'en': '20-year mean'},
     'series_obs_unc': {'fi': 'Havaintojen epävarmuus (95 %)', 'en': 'Observational uncertainty (95%)'},
     'tt_series': {'fi': 'Sarja', 'en': 'Series'},
     'tt_temp': {'fi': 'Lämpötila', 'en': 'Temperature'},
     'paris_15': {'fi': '1,5 °C (Pariisin tavoite)', 'en': '1.5 °C (Paris goal)'},
     'paris_20': {'fi': '2,0 °C (Pariisin raja)', 'en': '2.0 °C (Paris limit)'},
     'peak_label': {
-        'fi': 'Huippu (20 v. keskiarvo): {value} °C (n. {year})',
-        'en': 'Peak (20-yr mean): {value} °C (~{year})',
+        'fi': 'Huippu, keskiarvo {first}–{last}: {value} °C',
+        'en': 'Peak, mean {first}–{last}: {value} °C',
     },
+    'mean_label': {'fi': 'Keskiarvo {first}–{last}: {value} °C', 'en': 'Mean {first}–{last}: {value} °C'},
 
     # --- emissions charts ---
     'bar_base': {'fi': 'Päästöt {year}', 'en': 'Emissions {year}'},
