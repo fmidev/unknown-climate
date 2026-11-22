@@ -2,7 +2,9 @@
 
 *Unknown Climate: a climate negotiation game under uncertainty*
 
-Interactive classroom demo for grades 7–9 on climate negotiations and the Paris Agreement.
+Interactive classroom demo on climate negotiations and the Paris Agreement, for players from
+grade 7 upwards, including adults. It is meant to be led by a teacher or other presenter;
+younger players need more help from the presenter.
 Built with [Streamlit](https://streamlit.io/) and the [FaIR v2.2](https://docs.fairmodel.net/) climate model.
 
 ## What it does

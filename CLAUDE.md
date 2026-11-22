@@ -2,7 +2,9 @@
 
 ## What this is
 
-A Streamlit classroom app for grades 7–9 climate negotiation simulation (also usable with adults).
+A Streamlit classroom app for a climate negotiation role-play led by a teacher or other
+presenter, for players from grade 7 upwards, including adults (younger players need more
+help from the presenter).
 Run with `streamlit run app.py`; instructor slider mode by opening the URL with `?mode=sliders`.
 Pinned pip dependencies in `requirements.txt` (used by Streamlit Cloud); conda dev env in
 `environment-dev.yml` (Python 3.11, FaIR 2.2). UI in Finnish and English: the language is
