@@ -5,9 +5,9 @@ FaIR-pohjainen luokkahuonedemosovellus.
 
 Screen flow (SCREENS):
   pledges   Phase 1: each group sets its 2040 fossil CO2 cut (CHECKPOINT)
-  prior     what is known before anything is drawn: ECS and 2100 warming over the whole ensemble
+  prior     what is known before anything is drawn: ECS and 2090-2109 warming over the whole ensemble
   draw      one ensemble member ("one possible Earth") is drawn; its ECS stays hidden
-  sim1      FaIR run of the drawn member to 2040; single year 2040 vs the decade centred on 2040
+  sim1      FaIR run of the drawn member to 2040; single year 2040 vs the 20-year mean centred on 2040
   obs2040   update 1: the observed 2031-2040 mean narrows the estimates (only a little)
   research  update 2: a noisy research estimate of ECS narrows them clearly
   phase2    Phase 2: each group sets its net-zero year; FaIR run to the peak
@@ -57,8 +57,26 @@ ANIM_SECONDS    = 5.0    # duration of the year-by-year line animation (increase
 ANIM_MAX_FRAMES = 60     # chart updates sent to the browser; years are grouped beyond this
 OBS_COLOR       = '#555B66'   # observed GMST: dark grey on the light theme
 MODEL_COLOR     = '#5A84E2'
-DECADE_COLOR    = '#D9961A'   # darker than the old yellow so it reads on white too
-ESTIMATE_YEAR   = 2100   # year of the warming estimate shown to the players
+CENTRED_COLOR   = '#D9961A'   # darker than the old yellow so it reads on white too
+ESTIMATE_YEAR   = 2100   # centre of the end-of-century warming estimate shown to the players
+
+# LONG-TERM WARMING IS A 20-YEAR MEAN
+# The Paris thresholds and the IPCC warming levels (also those of the impacts page) refer to
+# long-term warming, which IPCC AR6 defines as a 20-year mean. A single annual mean carries the
+# member's internal variability (year-to-year sd ~0.055 °C in the screened members), and the
+# hottest single year after net zero is biased high (it picks a warm year). So every verdict and
+# estimate of warming uses a 20-year mean centred on a year Y.0: annual years Y-10 … Y+9, whose
+# mid-points Y-9.5 … Y+9.5 centre on Y.0.
+LONG_TERM_YEARS = 20
+
+
+def _centred_window(centre):
+    """(first, last) annual years of the LONG_TERM_YEARS mean centred on centre.0."""
+    return centre - LONG_TERM_YEARS // 2, centre + LONG_TERM_YEARS // 2 - 1
+
+
+ESTIMATE_WINDOW = _centred_window(ESTIMATE_YEAR)   # (2090, 2109)
+ESTIMATE_LABELS = dict(year=ESTIMATE_YEAR, first=ESTIMATE_WINDOW[0], last=ESTIMATE_WINDOW[1])   # for t()
 
 # HOW THE ESTIMATES ARE UPDATED
 # Prior: every screened member is equally likely (the member is drawn uniformly).
@@ -85,16 +103,17 @@ OBS_2040_SD     = 0.05           # °C
 OBS_BAND_RECENT = (2015, 2024)
 OBS_BAND_COLOR  = '#9AA0A8'
 ECS_CLUE_SD     = 0.5            # °C
-# Decade centred on 2040: annual years 2035-2044 (mid-points 2035.5…2044.5 centre on 2040.0).
-# By 2040 only 2035-2040 are known; 2041-2044 are projected with the members weighted by updates 1
+# 20-year mean centred on 2040: annual years 2030-2049 (mid-points 2030.5…2049.5 centre on 2040.0).
+# By 2040 only 2030-2040 are known; 2041-2049 are projected with the members weighted by updates 1
 # and 2, since in the story both the observation and the new research exist at the end of 2040.
-# Checked offline (1200 simulated games, emulator): error sd of the decade mean 0.038 °C with
-# both updates, 0.040 °C with update 1 only, 0.064 °C with update 2 only and 0.079 °C with the
-# unweighted prior (vs 0.06 °C for the single year 2040). The research estimate adds little here:
-# near-term warming is set by the transient response and aerosol forcing, which the observed
-# 2031-2040 mean constrains, not by ECS. Paris thresholds are judged on this mean,
-# like the WMO/Copernicus "current warming level" (observations + constrained projections).
-CENTRED_WINDOW  = (2035, 2044)
+# Checked offline (1200 simulated games, emulator, random pledges): error sd of the 20-year mean
+# 0.044 °C with both updates, 0.048 °C with update 1 only, 0.076 °C with update 2 only and
+# 0.096 °C with the unweighted prior (vs 0.071 °C if the single year 2040 stood in for the mean).
+# The research estimate adds little here: near-term warming is set by the transient response and
+# aerosol forcing, which the observed 2031-2040 mean constrains, not by ECS.
+# Paris thresholds are judged on this mean, like the WMO "current warming level"
+# (20 years: observations of the past decade + constrained projections of the next).
+CENTRED_WINDOW  = _centred_window(CHECKPOINT)   # (2030, 2049)
 EXCEEDANCE_LEVELS = (1.5, 2.0, 3.0, 4.0)   # °C, the warming levels of the impacts page
 
 # Emission reduction options per region (4 discrete choices, ordered least to most ambitious).
@@ -427,7 +446,7 @@ def _init_state():
         'ecs_clue':        None,     # research estimate of ECS, with error
         'weights_obs':     None,     # member weights after update 1 (pd.Series by config_id)
         'weights_research': None,    # member weights after updates 1 and 2
-        'centred_decade':  None,     # (mean, lo, hi) of the CENTRED_WINDOW mean, °C
+        'centred_mean':    None,     # (mean, lo, hi) of the CENTRED_WINDOW mean, °C
         # Set at the Phase 2 simulation
         'temp_phase2':     None,
         'phase2_netzero_used': None, # net-zero years of temp_phase2, to detect stale results
@@ -445,11 +464,32 @@ def _goto(screen):
     st.rerun()
 
 
-def _window_mean_members(cuts, window):
-    """Emulated mean of the annual temperatures window[0]..window[1] for every member (Phase 1 pathway)."""
+def _window_mean_members(cuts, window, netzero_years=None):
+    """
+    Emulated mean of the annual temperatures window[0]..window[1] for every member
+    (netzero_years=None: Phase 1 pathway, pledges extrapolated after CHECKPOINT).
+    """
     first, last = window
-    total = sum(emulate_temperature(cuts, None, year) for year in range(first, last + 1))
+    total = sum(emulate_temperature(cuts, netzero_years, year) for year in range(first, last + 1))
     return total / (last - first + 1)
+
+
+def _centred_mean(series, centre):
+    """LONG_TERM_YEARS mean of an annual series (dim 'year') centred on centre.0."""
+    first, last = _centred_window(centre)
+    return float(series.sel(year=slice(first, last)).mean())
+
+
+def _long_term_peak(series):
+    """
+    (value, centre year) of the highest LONG_TERM_YEARS centred mean after CHECKPOINT, over the
+    centres whose whole window lies within the series.
+    """
+    last_centre = int(series.year.max()) - (LONG_TERM_YEARS // 2 - 1)
+    centres = range(CHECKPOINT + 1, last_centre + 1)
+    means = [_centred_mean(series, centre) for centre in centres]
+    best = int(np.argmax(means))
+    return means[best], centres[best]
 
 
 def _simulate_phase1(cuts):
@@ -474,15 +514,15 @@ def _simulate_phase1(cuts):
     weights_research = weights_obs * posterior_weights(ecs, clue, ECS_CLUE_SD)
     weights_research = weights_research / weights_research.sum()
 
-    # Mean of the decade centred on 2040: the drawn member's known years up to 2040, the rest
+    # 20-year mean centred on 2040: the drawn member's known years up to 2040, the rest
     # projected per member. Its spread across the members weighted by both updates (all that is
-    # known at the end of 2040) is the uncertainty that comes from not yet knowing 2041-2044.
+    # known at the end of 2040) is the uncertainty that comes from not yet knowing 2041-2049.
     known_sum = float(temp.sel(year=slice(CENTRED_WINDOW[0], OBS_WINDOW[1])).sum())
     projected_sum = sum(emulate_temperature(cuts, None, year)
                         for year in range(OBS_WINDOW[1] + 1, CENTRED_WINDOW[1] + 1))
     n_years = CENTRED_WINDOW[1] - CENTRED_WINDOW[0] + 1
-    decade_members = (known_sum + projected_sum) / n_years
-    st.session_state['centred_decade'] = weighted_mean_interval(decade_members, weights_research)
+    centred_members = (known_sum + projected_sum) / n_years
+    st.session_state['centred_mean'] = weighted_mean_interval(centred_members, weights_research)
 
     st.session_state['obs_window_mean'] = observed
     st.session_state['ecs_clue'] = clue
@@ -518,7 +558,7 @@ def _exceedance(temperature, weights):
 @st.cache_data
 def _estimate_temperature_range(use_sliders: bool) -> tuple:
     """
-    Fixed x range (°C) of the ESTIMATE_YEAR warming histogram, so the axis does not move when the
+    Fixed x range (°C) of the ESTIMATE_WINDOW warming histogram, so the axis does not move when the
     players change emissions. Envelope over all members of the extreme choices: every region at
     its most and least ambitious pledge, with no Phase 2 net zero (emissions flat after
     CHECKPOINT, used before Phase 2) and with the fastest / slowest net-zero option. Rounded
@@ -537,7 +577,7 @@ def _estimate_temperature_range(use_sliders: bool) -> tuple:
         netzero_options = [None] + [{region: _min_netzero_year(cuts[region]) + offset
                                      for region in regions} for offset in offsets]
         for netzero_years in netzero_options:
-            temperature = emulate_temperature(cuts, netzero_years, ESTIMATE_YEAR)
+            temperature = _window_mean_members(cuts, ESTIMATE_WINDOW, netzero_years)
             lows.append(temperature.min())
             highs.append(temperature.max())
     return float(np.floor(min(lows) * 2) / 2), float(np.ceil(max(highs) * 2) / 2)
@@ -545,7 +585,7 @@ def _estimate_temperature_range(use_sliders: bool) -> tuple:
 
 def _estimate_figure(temperature, stages, truth=None, show_ecs=True, compact=False):
     """
-    Weighted histograms of ECS (left) and ESTIMATE_YEAR warming (right), one per estimate stage
+    Weighted histograms of ECS (left) and ESTIMATE_WINDOW mean warming (right), one per estimate stage
     (newest stage solid, older ones faint), with each stage's mean and 95 % interval as a bar
     underneath. truth = (ecs, temperature) marks the drawn member's real values (reveal).
     show_ecs=False draws only the warming panel (Phase 2: ECS does not depend on the decisions).
@@ -556,7 +596,7 @@ def _estimate_figure(temperature, stages, truth=None, show_ecs=True, compact=Fal
     if show_ecs:
         ecs = _load_screened()['ECS']
         panels.append((ecs, t('est_ecs_title'), '°C', None if truth is None else truth[0]))
-    panels.append((temperature, t('est_temp_title', year=ESTIMATE_YEAR), '°C',
+    panels.append((temperature, t('est_temp_title', **ESTIMATE_LABELS), '°C',
                    None if truth is None else truth[1]))
     n_cols = len(panels)
     if compact:
@@ -633,7 +673,7 @@ def _estimate_figure(temperature, stages, truth=None, show_ecs=True, compact=Fal
 
 def _show_estimates(cuts, netzero_years, upto_screen, truth=None, show_ecs=True, compact=False):
     """Histograms of the estimate stages and the exceedance probabilities of the newest stage."""
-    temperature = emulate_temperature(cuts, netzero_years, ESTIMATE_YEAR)
+    temperature = _window_mean_members(cuts, ESTIMATE_WINDOW, netzero_years)
     stages = _stage_weights(upto_screen)
     st.pyplot(_estimate_figure(temperature, stages, truth, show_ecs=show_ecs, compact=compact))
     st.caption(t('est_caption'))
@@ -641,7 +681,7 @@ def _show_estimates(cuts, netzero_years, upto_screen, truth=None, show_ecs=True,
     newest = list(stages)[-1]
     probabilities = _exceedance(temperature, stages[newest])
     prior_probabilities = _exceedance(temperature, stages['prior'])
-    st.markdown(t('exceed_heading', year=ESTIMATE_YEAR, stage=_stage_label(newest).lower()))
+    st.markdown(t('exceed_heading', **ESTIMATE_LABELS, stage=_stage_label(newest).lower()))
     cols = st.columns(len(EXCEEDANCE_LEVELS))
     for col, level in zip(cols, EXCEEDANCE_LEVELS):
         delta = None
@@ -739,21 +779,21 @@ def _impacts_page():
             st.markdown(_bar(sev), unsafe_allow_html=True)
 
     # Link the chosen level to the players' own decisions: the probability of exceeding it in
-    # ESTIMATE_YEAR with the current knowledge (newest estimate stage reached so far).
+    # ESTIMATE_WINDOW (20-year mean) with the current knowledge (newest estimate stage reached so far).
     st.markdown('---')
     screen = st.session_state['screen']
     netzero_years = st.session_state['netzero_years'] if screen in ('phase2', 'reveal') else None
-    temperature = emulate_temperature(st.session_state['cuts'], netzero_years, ESTIMATE_YEAR)
+    temperature = _window_mean_members(st.session_state['cuts'], ESTIMATE_WINDOW, netzero_years)
     stages = _stage_weights(screen)
     newest = list(stages)[-1]
     probability = _exceedance(temperature, stages[newest])[selected]
     decisions = t('imp_decisions_both') if netzero_years else t('imp_decisions_pledges')
-    message = t('imp_message', decisions=decisions, level=_num(selected, 1), year=ESTIMATE_YEAR,
+    message = t('imp_message', decisions=decisions, level=_num(selected, 1), **ESTIMATE_LABELS,
                 prob=_pct(probability * 100), stage=_stage_label(newest).lower())
-    if st.session_state['centred_decade'] is not None:
-        decade_mean = st.session_state['centred_decade'][0]
-        message += t('imp_decade', first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1],
-                     value=_num(decade_mean, 2))
+    if st.session_state['centred_mean'] is not None:
+        centred_mean = st.session_state['centred_mean'][0]
+        message += t('imp_centred', first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1],
+                     value=_num(centred_mean, 2))
     st.info(message)
 
     st.markdown(
@@ -797,7 +837,7 @@ def _nav_bar():
 
 
 def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
-                       highlight_year=None, show_peak=False, decade=None):
+                       highlight_year=None, show_peak=False, centred=None):
     """
     Altair chart of the temperature trajectory: observations (up to 2025) and the simulated
     annual means from ANIM_START up to upto_year (the animation reveals the line year by year).
@@ -807,8 +847,8 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
 
     temp_da        : xr.DataArray dim 'year' (annual means, see annual_series), single config
     highlight_year : dotted vertical line (Phase 1: CHECKPOINT)
-    final          : add the summary marks: the peak (show_peak) and the decade bar (decade)
-    decade         : (mean, lo, hi) of the CENTRED_WINDOW mean: solid over the known years,
+    final          : add the summary marks: the peak (show_peak) and the centred-mean bar (centred)
+    centred        : (mean, lo, hi) of the CENTRED_WINDOW mean: solid over the known years,
                      dashed and shaded over the projected ones. Extends the x axis.
     """
     gmst = _load_gmst()
@@ -821,9 +861,9 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
     x_end = year_end + 1
     y_min = min(float(obs['gmst'].min()), 0.0) - 0.15
     y_max = max(float(t_fut.max()), float(obs['gmst'].max())) + 0.45
-    if decade is not None:
+    if centred is not None:
         x_end = max(x_end, CENTRED_WINDOW[1] + 2)
-        y_max = max(y_max, decade[2] + 0.3)
+        y_max = max(y_max, centred[2] + 0.3)
     x_scale = alt.Scale(domain=[year_start, x_end], nice=False, zero=False)
     y_scale = alt.Scale(domain=[y_min, y_max], nice=False, zero=False)
     x_enc = alt.X('x:Q', scale=x_scale, axis=alt.Axis(title=t('axis_year'), format='d'))
@@ -907,36 +947,47 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
         ]
 
     if final and show_peak:
-        after = temp_da.sel(year=temp_da.year > CHECKPOINT)
-        peak_temp = float(after.max())
-        peak_year = int(after.year.values[after.values.argmax()])
-        peak = pd.DataFrame({'x': [peak_year + 0.5], 'T': [peak_temp],
+        # The peak is judged on the 20-year centred mean (see LONG_TERM_YEARS), drawn as its own
+        # line at the window centres Y.0 so the marker sits on it, not on a single warm year.
+        last_centre = min(year_end, int(years.max()) - (LONG_TERM_YEARS // 2 - 1))
+        # From the first window that lies wholly in the simulated years (2026 onwards)
+        centres = np.arange(ANIM_START + LONG_TERM_YEARS // 2, last_centre + 1)
+        running = pd.DataFrame({'x': centres.astype(float),
+                                'T': [_centred_mean(temp_da, int(c)) for c in centres],
+                                'sarja': t('series_long_term')})
+        peak_temp, peak_year = _long_term_peak(temp_da)
+        peak = pd.DataFrame({'x': [float(peak_year)], 'T': [peak_temp],
                              'nimi': [t('peak_label', value=_num(peak_temp, 2), year=peak_year)]})
         layers += [
+            alt.Chart(running).mark_line(strokeWidth=2.5, clip=True).encode(
+                x=x_enc, y=y_enc,
+                color=alt.Color('sarja:N', scale=alt.Scale(domain=[t('series_long_term')],
+                                                          range=[CENTRED_COLOR]),
+                                legend=alt.Legend(title=None, orient='bottom-right', labelLimit=0))),
             alt.Chart(peak).mark_rule(strokeDash=[2, 3], color=OBS_COLOR).encode(x=x_enc),
-            alt.Chart(peak).mark_point(size=90, filled=True, color=MODEL_COLOR).encode(x=x_enc, y=y_enc),
+            alt.Chart(peak).mark_point(size=90, filled=True, color=CENTRED_COLOR).encode(x=x_enc, y=y_enc),
             alt.Chart(peak).mark_text(align='left', dx=8, dy=-10, fontSize=13, fontWeight='bold',
-                                      color=MODEL_COLOR).encode(x=x_enc, y=y_enc, text='nimi:N'),
+                                      color=CENTRED_COLOR).encode(x=x_enc, y=y_enc, text='nimi:N'),
         ]
 
-    if final and decade is not None:
-        # The decade covers annual years CENTRED_WINDOW, i.e. x from its first year to one past
+    if final and centred is not None:
+        # The bar covers annual years CENTRED_WINDOW, i.e. x from its first year to one past
         # its last; the years after OBS_WINDOW[1] are not known yet in 2040 (projected).
-        mean, lo, hi = decade
+        mean, lo, hi = centred
         x0, x_known, x1 = CENTRED_WINDOW[0], OBS_WINDOW[1] + 1, CENTRED_WINDOW[1] + 1
         band = pd.DataFrame({'x': [x_known], 'x2': [x1], 'T': [lo], 'T2': [hi]})
         known = pd.DataFrame({'x': [x0], 'x2': [x_known], 'T': [mean]})
         projected = pd.DataFrame({'x': [x_known], 'x2': [x1], 'T': [mean]})
         layers += [
-            alt.Chart(band).mark_rect(opacity=0.25, color=DECADE_COLOR).encode(
+            alt.Chart(band).mark_rect(opacity=0.25, color=CENTRED_COLOR).encode(
                 x=x_enc, x2='x2:Q', y=y_enc, y2='T2:Q'),
-            alt.Chart(known).mark_rule(strokeWidth=4, color=DECADE_COLOR).encode(
+            alt.Chart(known).mark_rule(strokeWidth=4, color=CENTRED_COLOR).encode(
                 x=x_enc, x2='x2:Q', y=y_enc),
-            alt.Chart(projected).mark_rule(strokeWidth=4, strokeDash=[5, 3], color=DECADE_COLOR).encode(
+            alt.Chart(projected).mark_rule(strokeWidth=4, strokeDash=[5, 3], color=CENTRED_COLOR).encode(
                 x=x_enc, x2='x2:Q', y=y_enc),
         ]
 
-    # Right padding holds the impact labels (the decade value is shown as a metric below)
+    # Right padding holds the impact labels (the centred mean is shown as a metric below)
     return (alt.layer(*layers).resolve_scale(color='independent')
             .properties(height=440, padding={'left': 5, 'top': 10, 'bottom': 5, 'right': 210}))
 
@@ -1187,11 +1238,13 @@ def _screen_pledges():
         st.pyplot(_emissions_bar_chart(cuts, total_title))
     with col_estimate:
         st.subheader(t('pl_estimate'))
-        # Prior estimate for CHECKPOINT (whole screened ensemble, equal weights): mean and 95 %
-        # interval. ESTIMATE_YEAR is not repeated here; the histogram below shows it.
-        est_40 = emulate_temperature(cuts, None, CHECKPOINT)
-        st.info(t('pl_prior', year=CHECKPOINT, mean=_num(est_40.mean(), 1),
-                  lo=_num(est_40.quantile(0.025), 1), hi=_num(est_40.quantile(0.975), 1)))
+        # Prior estimate of the 20-year mean centred on CHECKPOINT (whole screened ensemble,
+        # equal weights): mean and 95 % interval. The end-of-century estimate is not repeated
+        # here; the histogram below shows it.
+        est_40 = _window_mean_members(cuts, CENTRED_WINDOW)
+        st.info(t('pl_prior', first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1],
+                  mean=_num(est_40.mean(), 1), lo=_num(est_40.quantile(0.025), 1),
+                  hi=_num(est_40.quantile(0.975), 1)))
         _show_estimates(cuts, None, 'prior', show_ecs=False, compact=True)
 
     st.caption(t('pl_assumption', year=CHECKPOINT, base_year=BASE_YEAR))
@@ -1250,39 +1303,39 @@ def _screen_sim1():
     _nav_bar()
     temp = st.session_state['temp_phase1']
     t_single = float(temp.sel(year=CHECKPOINT))
-    decade_mean, decade_lo, decade_hi = st.session_state['centred_decade']
+    centred_mean, centred_lo, centred_hi = st.session_state['centred_mean']
     gmst = _load_gmst()
     obs_last = float(gmst.loc[np.floor(gmst['year']) == ANIM_START - 1, 'gmst'].iloc[0])
 
     _show_temperature_animation(
         f'sim1-{st.session_state["config_id"]}',
-        # From 1960 (most of the warming, little flat early record) so that the 2035-2044
-        # decade bar and the single year 2040 are large enough to compare
+        # From 1960 (most of the warming, little flat early record) so that the 2030-2049
+        # centred-mean bar and the single year 2040 are large enough to compare
         temp_da=temp, year_start=1960, year_end=CHECKPOINT,
-        highlight_year=CHECKPOINT, decade=st.session_state['centred_decade'],
+        highlight_year=CHECKPOINT, centred=st.session_state['centred_mean'],
     )
-    col_obs, col_single, col_decade = st.columns(3)
+    col_obs, col_single, col_centred = st.columns(3)
     col_obs.metric(t('s1_obs', year=ANIM_START - 1), f'+{_num(obs_last, 2)} °C')
     col_single.metric(t('s1_year', year=CHECKPOINT), f'+{_num(t_single, 2)} °C')
-    col_decade.metric(t('s1_decade', first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1]),
-                      f'+{_num(decade_mean, 2)} °C',
-                      help=t('s1_decade_help', lo=_num(decade_lo, 2), hi=_num(decade_hi, 2),
-                             p0=OBS_WINDOW[1] + 1, p1=CENTRED_WINDOW[1]))
+    col_centred.metric(t('s1_centred', first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1]),
+                       f'+{_num(centred_mean, 2)} °C',
+                       help=t('s1_centred_help', lo=_num(centred_lo, 2), hi=_num(centred_hi, 2),
+                              p0=OBS_WINDOW[1] + 1, p1=CENTRED_WINDOW[1]))
 
-    # Paris thresholds refer to long-term warming, so the verdict uses the decade centred on 2040.
+    # Paris thresholds refer to long-term warming, so the verdict uses the 20-year mean centred on 2040.
     window = dict(first=CENTRED_WINDOW[0], last=CENTRED_WINDOW[1])
-    if decade_mean < PARIS_15:
+    if centred_mean < PARIS_15:
         st.success(t('s1_below15', **window))
-    elif decade_mean < PARIS_20:
+    elif centred_mean < PARIS_20:
         st.warning(t('s1_between', **window))
     else:
         st.error(t('s1_above20', **window))
 
     single_above = t_single >= PARIS_15
-    decade_above = decade_mean >= PARIS_15
+    centred_above = centred_mean >= PARIS_15
     st.markdown(t('s1_why', year=CHECKPOINT, p0=OBS_WINDOW[1] + 1, p1=CENTRED_WINDOW[1]))
-    if single_above != decade_above:
-        st.info(t('s1_split', year=CHECKPOINT, single=_num(t_single, 2), decade=_num(decade_mean, 2)))
+    if single_above != centred_above:
+        st.info(t('s1_split', year=CHECKPOINT, single=_num(t_single, 2), centred=_num(centred_mean, 2)))
     st.caption(t('s1_real'))
 
     if st.button(t('s1_next'), type='primary'):
@@ -1300,7 +1353,7 @@ def _screen_obs2040():
     ecs_old, ecs_new = _interval_width_change(ecs, stages, 'prior', 'obs2040')
     t_old, t_new = _interval_width_change(temperature, stages, 'prior', 'obs2040')
     ecs_narrowing = 1 - ecs_new / ecs_old
-    message = t('ob_ranges', ecs_change=_range_change_text(ecs_old, ecs_new), year=ESTIMATE_YEAR,
+    message = t('ob_ranges', ecs_change=_range_change_text(ecs_old, ecs_new), **ESTIMATE_LABELS,
                 t_change=_range_change_text(t_old, t_new))
     # Typically (median over simulated games) the ECS interval narrows by only ~20 %; it narrows
     # much more when the drawn member is in a tail of the ensemble. Describe the actual case.
@@ -1335,10 +1388,10 @@ def _screen_research():
     ecs = _load_screened()['ECS']
     ecs_old, ecs_new = _interval_width_change(ecs, stages, 'prior', 'research')
     t_old, t_new = _interval_width_change(temperature, stages, 'prior', 'research')
-    st.info(t('re_ranges', ecs_change=_range_change_text(ecs_old, ecs_new), year=ESTIMATE_YEAR,
+    st.info(t('re_ranges', ecs_change=_range_change_text(ecs_old, ecs_new), **ESTIMATE_LABELS,
               t_change=_range_change_text(t_old, t_new)))
     with st.expander(t('re_expander_title')):
-        st.markdown(t('re_expander_body', year=ESTIMATE_YEAR))
+        st.markdown(t('re_expander_body', **ESTIMATE_LABELS))
     if st.button(t('re_next'), type='primary'):
         _goto('phase2')
 
@@ -1394,9 +1447,12 @@ def _screen_phase2():
 
     temp2 = st.session_state['temp_phase2']
 
+    # Paris verdict on the peak of the 20-year centred mean; the hottest single year is kept only
+    # to point out when it alone would give a different verdict.
+    peak_temp, peak_yr = _long_term_peak(temp2)
     after_chk = temp2.sel(year=temp2.year > CHECKPOINT)
-    peak_temp = float(after_chk.max())
-    peak_yr   = int(after_chk.year.values[after_chk.values.argmax()])
+    single_max = float(after_chk.max())
+    single_max_yr = int(after_chk.year.values[after_chk.values.argmax()])
 
     sim_end = int(temp2.year.max())
     display_end = min(peak_yr + 30, sim_end)
@@ -1415,6 +1471,11 @@ def _screen_phase2():
         st.warning(t('p2_between'))
     else:
         st.error(t('p2_above20'))
+    level_crossed_by_single_year = next((level for level in (PARIS_15, PARIS_20)
+                                         if single_max >= level > peak_temp), None)
+    if level_crossed_by_single_year is not None:
+        st.info(t('p2_split', year=single_max_yr, single=_num(single_max, 2),
+                  peak=_num(peak_temp, 2), level=_level(level_crossed_by_single_year)))
 
     if st.button(t('p2_next'), type='primary'):
         _goto('reveal')
@@ -1430,8 +1491,8 @@ def _screen_reveal():
         return
 
     true_ecs = st.session_state['ecs']
-    true_temp = float(st.session_state['temp_phase2'].sel(year=ESTIMATE_YEAR))
-    st.markdown(t('rv_intro', ecs=_num(true_ecs, 2), year=ESTIMATE_YEAR, temp=_num(true_temp, 2)))
+    true_temp = _centred_mean(st.session_state['temp_phase2'], ESTIMATE_YEAR)
+    st.markdown(t('rv_intro', ecs=_num(true_ecs, 2), **ESTIMATE_LABELS, temp=_num(true_temp, 2)))
     temperature, stages = _show_estimates(cuts, netzero_years, 'reveal',
                                           truth=(true_ecs, true_temp))
 
@@ -1439,7 +1500,7 @@ def _screen_reveal():
     ecs = _load_screened()['ECS']
     checks = [
         (t('rv_ecs_name'), ecs, true_ecs),
-        (t('rv_temp_name', year=ESTIMATE_YEAR), temperature, true_temp),
+        (t('rv_temp_name', **ESTIMATE_LABELS), temperature, true_temp),
     ]
     for name, values, true_value in checks:
         mean, lo, hi = weighted_mean_interval(values, final)

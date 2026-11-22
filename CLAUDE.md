@@ -46,7 +46,7 @@ When developing new features, keep them compatible with Streamlit Community Clou
 - `fair_runner.py` — FaIR v2.2 wrapper used by the app (also used by the screening, so the
   seeded stochastic runs shown in the game are the ones that were screened)
 - `precompute_estimates.py` — fits a per-member linear emulator (T = a + b·cumulative CO₂ FFI) of
-  the annual-mean temperature for every year 2031–2045 and 2100, writes `data/estimate_emulator.csv`.
+  the annual-mean temperature for every year 2030–2049 and 2090–2109, writes `data/estimate_emulator.csv`.
   Gives the app ensemble estimates without running FaIR. Re-run (~5 min) after any change to the
   emissions setup, screening or targets; run `precompute_configs.py` first.
 - `precompute_obs_error.py` — 95 % observational uncertainty of annual GMST vs 1850–1900 from the
@@ -74,10 +74,15 @@ choices are commented by the constants in `app.py` (`OBS_WINDOW`, `OBS_2040_SD`,
 - Update 2: research estimate of ECS, noise SD 0.5 °C. Weights of the two updates multiply.
 - Both noise draws happen once per game (at the first simulation), so revisiting screens cannot
   average them away.
-- Paris verdict at 2040 uses the decade centred on 2040 (2035–2044): known years 2035–2040 plus
-  2041–2044 projected with the combined update-1 × update-2 weights (both exist at the end of 2040
-  in the story; the prior is clearly less accurate, research alone too).
-- Exceedance probabilities (1.5/2/3/4 °C in 2100) are sums of the current weights.
+- Long-term warming is always a 20-year mean centred on Y.0 (annual years Y−10…Y+9,
+  `LONG_TERM_YEARS`, `_centred_window()`), as IPCC AR6 warming levels; single years are shown
+  only to contrast with it.
+- Paris verdict at 2040 uses the 20-year mean centred on 2040 (2030–2049): known years 2030–2040
+  plus 2041–2049 projected with the combined update-1 × update-2 weights (both exist at the end of
+  2040 in the story; the prior is clearly less accurate, research alone too).
+- Phase 2 verdict: peak of the 20-year centred mean of the drawn member's run after 2040.
+- End-of-century estimate (histogram, reveal, impacts page) = 2090–2109 mean (`ESTIMATE_WINDOW`).
+  Exceedance probabilities (1.5/2/3/4 °C) are sums of the current weights.
 
 ## Scientific conventions
 

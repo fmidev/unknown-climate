@@ -56,7 +56,10 @@ TEXTS = {
 
     # --- estimate histograms and exceedance probabilities ---
     'est_ecs_title': {'fi': 'Ilmastoherkkyys', 'en': 'Climate sensitivity (ECS)'},
-    'est_temp_title': {'fi': 'Lämpeneminen vuonna {year}', 'en': 'Warming in {year}'},
+    'est_temp_title': {
+        'fi': 'Lämpeneminen {first}–{last} keskimäärin',
+        'en': 'Mean warming {first}–{last}',
+    },
     'est_true_value': {'fi': ' oikea arvo {value}', 'en': ' true value {value}'},
     'est_caption': {
         'fi': 'Pylväät: kuinka todennäköinen kukin arvo on. Alla: paras arvio (piste) ja 95 %:n väli – '
@@ -65,8 +68,10 @@ TEXTS = {
               'the true value falls within this range 19 times out of 20.',
     },
     'exceed_heading': {
-        'fi': '**Todennäköisyys, että lämpeneminen vuonna {year} ylittää tason** ({stage}):',
-        'en': '**Probability that warming in {year} exceeds the level** ({stage}):',
+        'fi': '**Todennäköisyys, että lämpeneminen vuoden {year} tienoilla (keskiarvo {first}–{last}) '
+              'ylittää tason** ({stage}):',
+        'en': '**Probability that warming around {year} (mean of {first}–{last}) exceeds the level** '
+              '({stage}):',
     },
     'exceed_label': {'fi': 'yli {level} °C', 'en': 'above {level} °C'},
     'exceed_delta': {'fi': '{change} %-yks. alkuarviosta', 'en': '{change} pp vs initial estimate'},
@@ -89,14 +94,14 @@ TEXTS = {
     },
     'imp_decisions_pledges': {'fi': 'lupauksillanne', 'en': 'pledges'},
     'imp_message': {
-        'fi': '📊 **Teidän {decisions}** lämpeneminen ylittää **+{level} °C** vuonna {year} '
-              'todennäköisyydellä **{prob}** ({stage}).',
-        'en': '📊 **With your {decisions}**, warming exceeds **+{level} °C** in {year} '
-              'with a probability of **{prob}** ({stage}).',
+        'fi': '📊 **Teidän {decisions}** lämpeneminen vuoden {year} tienoilla (keskiarvo {first}–{last}) '
+              'ylittää **+{level} °C** todennäköisyydellä **{prob}** ({stage}).',
+        'en': '📊 **With your {decisions}**, warming around {year} (mean of {first}–{last}) exceeds '
+              '**+{level} °C** with a probability of **{prob}** ({stage}).',
     },
-    'imp_decade': {
-        'fi': '  \nSimulaationne vuosikymmenen {first}–{last} keskilämpötila: **+{value} °C**.',
-        'en': '  \nMean temperature of your simulation over {first}–{last}: **+{value} °C**.',
+    'imp_centred': {
+        'fi': '  \nSimulaationne 20 vuoden keskilämpötila {first}–{last}: **+{value} °C**.',
+        'en': '  \nMean temperature of your simulation over the 20 years {first}–{last}: **+{value} °C**.',
     },
     'imp_sources': {
         'fi': 'Lähteet: IPCC AR6 WG1 (2021), SR1.5 (2018) · Suomen luvut: Ilmatieteen laitos',
@@ -106,12 +111,16 @@ TEXTS = {
     # --- temperature chart ---
     'series_obs': {'fi': 'Havaittu', 'en': 'Observed'},
     'series_model': {'fi': 'Ilmastomalli', 'en': 'Climate model'},
+    'series_long_term': {'fi': '20 vuoden keskiarvo', 'en': '20-year mean'},
     'series_obs_unc': {'fi': 'Havaintojen epävarmuus (95 %)', 'en': 'Observational uncertainty (95%)'},
     'tt_series': {'fi': 'Sarja', 'en': 'Series'},
     'tt_temp': {'fi': 'Lämpötila', 'en': 'Temperature'},
     'paris_15': {'fi': '1,5 °C (Pariisin tavoite)', 'en': '1.5 °C (Paris goal)'},
     'paris_20': {'fi': '2,0 °C (Pariisin raja)', 'en': '2.0 °C (Paris limit)'},
-    'peak_label': {'fi': 'Huippu: {value} °C ({year})', 'en': 'Peak: {value} °C ({year})'},
+    'peak_label': {
+        'fi': 'Huippu (20 v. keskiarvo): {value} °C (n. {year})',
+        'en': 'Peak (20-yr mean): {value} °C (~{year})',
+    },
 
     # --- emissions charts ---
     'bar_base': {'fi': 'Päästöt {year}', 'en': 'Emissions {year}'},
@@ -167,10 +176,10 @@ TEXTS = {
     'pl_estimate': {'fi': 'Alkuarvio näillä lupauksilla',
                     'en': 'Initial estimate with these pledges'},
     'pl_prior': {
-        'fi': 'Lämpeneminen {year}: **{mean} °C** ({lo}–{hi} °C)  \n'
-              'Keskiarvo ja 95 %:n väli – emme vielä tiedä, kuinka herkkä ilmastomme on.',
-        'en': 'Warming in {year}: **{mean} °C** ({lo}–{hi} °C)  \n'
-              'Mean and 95% range – we do not yet know how sensitive our climate is.',
+        'fi': 'Keskilämpötila {first}–{last}: **{mean} °C** ({lo}–{hi} °C)  \n'
+              'Paras arvio ja 95 %:n väli – emme vielä tiedä, kuinka herkkä ilmastomme on.',
+        'en': 'Mean warming {first}–{last}: **{mean} °C** ({lo}–{hi} °C)  \n'
+              'Best estimate and 95% range – we do not yet know how sensitive our climate is.',
     },
     'pl_assumption': {
         'fi': 'Oletus {year} jälkeen: kunkin alueen päästöt muuttuvat vuosittain yhtä paljon kuin '
@@ -240,50 +249,55 @@ TEXTS = {
     },
     's1_obs': {'fi': 'Havaittu {year}', 'en': 'Observed {year}'},
     's1_year': {'fi': 'Vuosi {year}', 'en': 'Year {year}'},
-    's1_decade': {'fi': 'Keskiarvo {first}–{last}', 'en': 'Mean {first}–{last}'},
-    's1_decade_help': {
+    's1_centred': {'fi': 'Keskiarvo {first}–{last}', 'en': 'Mean {first}–{last}'},
+    's1_centred_help': {
         'fi': '95 %:n väli {lo}–{hi} °C, koska vuodet {p0}–{p1} on arvioitu',
         'en': '95% range {lo}–{hi} °C, because the years {p0}–{p1} are projected',
     },
     's1_below15': {
-        'fi': '✅ Vuosikymmenen {first}–{last} keskilämpötila on alle 1,5 °C:n tavoitteen!',
-        'en': '✅ The mean temperature of the decade {first}–{last} is below the 1.5 °C goal!',
+        'fi': '✅ 20 vuoden jakson {first}–{last} keskilämpötila on alle 1,5 °C:n tavoitteen!',
+        'en': '✅ The 20-year mean temperature {first}–{last} is below the 1.5 °C goal!',
     },
     's1_between': {
-        'fi': '⚠️ Vuosikymmenen {first}–{last} keskilämpötila on yli 1,5 °C mutta alle 2 °C:n rajan.',
-        'en': '⚠️ The mean temperature of the decade {first}–{last} is above 1.5 °C but below the '
-              '2 °C limit.',
+        'fi': '⚠️ 20 vuoden jakson {first}–{last} keskilämpötila on yli 1,5 °C mutta alle 2 °C:n '
+              'rajan.',
+        'en': '⚠️ The 20-year mean temperature {first}–{last} is above 1.5 °C but below the 2 °C limit.',
     },
     's1_above20': {
-        'fi': '❌ Vuosikymmenen {first}–{last} keskilämpötila ylittää 2 °C:n Pariisin rajan.',
-        'en': '❌ The mean temperature of the decade {first}–{last} exceeds the 2 °C Paris limit.',
+        'fi': '❌ 20 vuoden jakson {first}–{last} keskilämpötila ylittää 2 °C:n Pariisin rajan.',
+        'en': '❌ The 20-year mean temperature {first}–{last} exceeds the 2 °C Paris limit.',
     },
     's1_why': {
         'fi': '**Miksi keskiarvo eikä vain vuosi {year}?** Yksittäinen vuosi heittelee luonnollisen '
               'vaihtelun (esim. El Niño) takia. Pariisin sopimuksen rajat tarkoittavat pitkän ajan '
-              'lämpenemistä, joten sitä arvioidaan tässä pelissä vuosikymmenen keskiarvona. Vuoden {year} '
-              'lopussa vuodet {p0}–{p1} ovat vielä tulevaisuutta, joten ne on arvioitu (katkoviiva ja '
-              'varjostus). Arvio käyttää kaikkea vuoden {year} lopussa saatavilla olevaa tietoa: '
-              'mittauksia ja uusinta tutkimusta, joihin tutustutte seuraavaksi.',
+              'lämpenemistä, jota IPCC arvioi 20 vuoden keskiarvona, ja niin tehdään myös tässä pelissä. '
+              'Vuoden {year} lopussa vuodet {p0}–{p1} ovat vielä tulevaisuutta, joten ne on arvioitu '
+              '(katkoviiva ja varjostus). Arvio käyttää kaikkea vuoden {year} lopussa saatavilla olevaa '
+              'tietoa: mittauksia ja uusinta tutkimusta, joihin tutustutte seuraavaksi.',
         'en': '**Why a mean and not just the year {year}?** A single year jumps up and down because of '
               'natural variability (e.g. El Niño). The limits of the Paris Agreement refer to long-term '
-              'warming, so in this game it is judged by a decadal mean. At the end of {year}, the years '
-              '{p0}–{p1} are still in the future, so they are estimated (dashed line and shading). The '
-              'estimate uses all information available at the end of {year}: measurements and the latest '
-              'research, which you will look at next.',
+              'warming, which the IPCC measures as a 20-year mean, and this game does the same. At the '
+              'end of {year}, the years {p0}–{p1} are still in the future, so they are estimated (dashed '
+              'line and shading). The estimate uses all information available at the end of {year}: '
+              'measurements and the latest research, which you will look at next.',
     },
     's1_split': {
-        'fi': '💡 Huomatkaa: vuosi {year} ({single} °C) ja vuosikymmenen keskiarvo ({decade} °C) ovat '
+        'fi': '💡 Huomatkaa: vuosi {year} ({single} °C) ja 20 vuoden keskiarvo ({centred} °C) ovat '
               'eri puolilla 1,5 °C:n rajaa. Yksi vuosi ei vielä kerro, onko raja ylitetty.',
-        'en': '💡 Notice: the year {year} ({single} °C) and the decadal mean ({decade} °C) are on '
+        'en': '💡 Notice: the year {year} ({single} °C) and the 20-year mean ({centred} °C) are on '
               'different sides of the 1.5 °C limit. A single year does not yet tell whether the limit '
               'has been crossed.',
     },
     's1_real': {
+        # Human-induced warming (IGCC 2025, ESSD 18, 3889, 2026) stands in for the 20-year
+        # centred warming level, which needs projections and has no published 2025 value; WMO's
+        # 2024 report gave 1.34-1.41 °C for the current warming level by three methods.
         'fi': 'Oikeassa maailmassa vuosi 2024 oli ensimmäinen yli 1,5 °C:n vuosi (1,51 °C), mutta '
-              'vuosien 2016–2025 keskiarvo oli 1,26 °C (IGCC-2025a).',
-        'en': 'In the real world, 2024 was the first year above 1.5 °C (1.51 °C), but the 2016–2025 '
-              'mean was 1.26 °C (IGCC-2025a).',
+              'pitkän ajan lämpenemisen arvioidaan olevan noin 1,4 °C (ihmisen aiheuttama '
+              'lämpeneminen 2025: 1,37 °C, IGCC 2025).',
+        'en': 'In the real world, 2024 was the first year above 1.5 °C (1.51 °C), but long-term '
+              'warming is estimated at about 1.4 °C (human-induced warming in 2025: 1.37 °C, '
+              'IGCC 2025).',
     },
     's1_next': {'fi': 'Mitä opimme havainnoista? →', 'en': 'What do the observations tell us? →'},
 
@@ -311,8 +325,10 @@ TEXTS = {
         'en': 'widened **{old} → {new} °C**',
     },
     'ob_ranges': {
-        'fi': 'Ilmastoherkkyyden 95 %:n väli {ecs_change}, vuoden {year} lämpenemisen {t_change}. ',
-        'en': 'The 95% range of climate sensitivity {ecs_change}, that of warming in {year} {t_change}. ',
+        'fi': 'Ilmastoherkkyyden 95 %:n väli {ecs_change}, vuoden {year} tienoilla odotettavan '
+              'lämpenemisen {t_change}. ',
+        'en': 'The 95% range of climate sensitivity {ecs_change}, that of warming around {year} '
+              '{t_change}. ',
     },
     'ob_widened': {
         'fi': 'Havainto ei kaventanut väliä vaan siirsi arviota kohti {direction} ilmastoherkkyyttä '
@@ -373,21 +389,21 @@ TEXTS = {
     },
     're_ranges': {
         'fi': 'Alkuarvioon verrattuna ilmastoherkkyyden 95 %:n väli {ecs_change}, vuoden {year} '
-              'lämpenemisen {t_change}.',
+              'tienoilla odotettavan lämpenemisen {t_change}.',
         'en': 'Compared with the initial estimate, the 95% range of climate sensitivity {ecs_change}, '
-              'that of warming in {year} {t_change}.',
+              'that of warming around {year} {t_change}.',
     },
     're_expander_title': {
         'fi': 'Miksi lämpenemisen arvio ei tarkentunut yhtä paljon kuin ilmastoherkkyyden?',
         'en': 'Why did the warming estimate not sharpen as much as the climate sensitivity estimate?',
     },
     're_expander_body': {
-        'fi': 'Vuoden {year} lämpeneminen ei riipu vain ilmastoherkkyydestä. Siihen vaikuttavat myös '
-              'lyhyen aikavälin vaste, aerosolien viilennys ja se, kuinka paljon meret ja kasvillisuus '
+        'fi': 'Lämpeneminen vuoden {year} tienoilla ei riipu vain ilmastoherkkyydestä. Siihen '
+              'vaikuttavat myös lyhyen aikavälin vaste, aerosolien viilennys ja se, kuinka paljon meret ja kasvillisuus '
               'sitovat hiilidioksidia. Vaikka ilmastoherkkyys tunnettaisiin tarkasti, lämpenemisessä '
               'olisi silti epävarmuutta.',
-        'en': 'Warming in {year} does not depend on climate sensitivity alone. It is also affected by '
-              'the short-term response, aerosol cooling and how much carbon dioxide the oceans and '
+        'en': 'Warming around {year} does not depend on climate sensitivity alone. It is also affected '
+              'by the short-term response, aerosol cooling and how much carbon dioxide the oceans and '
               'vegetation take up. Even if climate sensitivity were known precisely, warming would '
               'still be uncertain.',
     },
@@ -421,9 +437,26 @@ TEXTS = {
         'en': 'The choices have changed – run the simulation again to see the result.',
     },
     'p2_results': {'fi': '📊 Simulaatiotulokset', 'en': '📊 Simulation results'},
-    'p2_below15': {'fi': '✅ Pysytään 1,5 °C:n tavoitteessa!', 'en': '✅ We stay within the 1.5 °C goal!'},
-    'p2_between': {'fi': '⚠️ Alle 2 °C, mutta yli 1,5 °C', 'en': '⚠️ Below 2 °C, but above 1.5 °C'},
-    'p2_above20': {'fi': '❌ Ylitetään 2 °C:n Pariisin raja', 'en': '❌ The 2 °C Paris limit is exceeded'},
+    'p2_below15': {
+        'fi': '✅ Lämpenemisen huippu (20 vuoden keskiarvo) jää alle 1,5 °C:n – pysytään tavoitteessa!',
+        'en': '✅ Peak warming (20-year mean) stays below 1.5 °C – we stay within the goal!',
+    },
+    'p2_between': {
+        'fi': '⚠️ Lämpenemisen huippu (20 vuoden keskiarvo) on yli 1,5 °C mutta alle 2 °C.',
+        'en': '⚠️ Peak warming (20-year mean) is above 1.5 °C but below 2 °C.',
+    },
+    'p2_above20': {
+        'fi': '❌ Lämpenemisen huippu (20 vuoden keskiarvo) ylittää 2 °C:n Pariisin rajan.',
+        'en': '❌ Peak warming (20-year mean) exceeds the 2 °C Paris limit.',
+    },
+    'p2_split': {
+        'fi': '💡 Kuumin yksittäinen vuosi ({year}: {single} °C) on yli {level} °C, mutta 20 vuoden '
+              'keskiarvon huippu ({peak} °C) jää sen alle. Yksi lämmin vuosi ei vielä tarkoita, että '
+              'raja on ylitetty.',
+        'en': '💡 The hottest single year ({year}: {single} °C) is above {level} °C, but the peak of '
+              'the 20-year mean ({peak} °C) stays below it. One warm year does not mean that the limit '
+              'has been crossed.',
+    },
     'p2_next': {'fi': '🔎 Paljasta ilmaston salaisuus →', 'en': "🔎 Reveal the climate's secret →"},
 
     # --- screen: reveal ---
@@ -436,13 +469,13 @@ TEXTS = {
         'en': 'Run the Phase 2 simulation first.',
     },
     'rv_intro': {
-        'fi': 'Meidän ilmastomme herkkyys oli **{ecs} °C**, ja teidän päätöksillänne '
-              'se lämpeni vuoteen {year} mennessä **{temp} °C**.',
-        'en': 'The sensitivity of our climate was **{ecs} °C**, and with your decisions '
-              'it warmed by **{temp} °C** by {year}.',
+        'fi': 'Meidän ilmastomme herkkyys oli **{ecs} °C**, ja teidän päätöksillänne se lämpeni '
+              'vuoden {year} tienoilla (keskiarvo {first}–{last}) **{temp} °C**.',
+        'en': 'The sensitivity of our climate was **{ecs} °C**, and with your decisions it warmed by '
+              '**{temp} °C** around {year} (mean of {first}–{last}).',
     },
     'rv_ecs_name': {'fi': 'Ilmastoherkkyys', 'en': 'Climate sensitivity'},
-    'rv_temp_name': {'fi': 'Lämpeneminen {year}', 'en': 'Warming in {year}'},
+    'rv_temp_name': {'fi': 'Lämpeneminen {first}–{last}', 'en': 'Warming {first}–{last}'},
     'rv_hit': {
         'fi': '🎯 {name}: oikea arvo {value} °C osui arvion 95 %:n välille '
               '({lo}–{hi} °C, paras arvio {mean} °C).',

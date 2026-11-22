@@ -21,9 +21,13 @@ CO2 FFI emission FIRST_OVERRIDE_YEAR (2023)..Y in 1000 GtCO2.
 
 TARGET YEARS
 ------------
-Every year 2031-2045, so that the app can form decadal means around the 2040 checkpoint
-(the trailing 2031-2040 mean that players "observe", and the 2035-2044 mean centred on 2040
-used to judge the Paris thresholds), plus 2100 for the end-of-century estimate.
+Every year 2030-2049 and 2090-2109, so that the app can form multi-year means instead of
+showing single years, which carry the member's internal variability:
+- 2031-2040: the trailing mean that players "observe" (Bayes update 1),
+- 2030-2049: the 20-year mean centred on 2040 used to judge the Paris thresholds
+  (IPCC AR6 defines warming levels as 20-year means),
+- 2090-2109: the 20-year mean centred on 2100, the end-of-century estimate.
+A 20-year mean centred on Y.0 covers annual years Y-10..Y+9 (mid-points Y-9.5..Y+9.5).
 
 WHY LINEAR IN CUMULATIVE CO2
 ----------------------------
@@ -51,7 +55,7 @@ import matplotlib.pyplot as plt
 import fair_runner as fr
 
 N_SCENARIOS_EACH = 15       # 15 Phase 1 style + 15 Phase 2 style decision sets
-TARGET_YEARS = tuple(range(2031, 2046)) + (2100,)
+TARGET_YEARS = tuple(range(2030, 2050)) + tuple(range(2090, 2110))
 DIAGNOSTIC_YEARS = (2040, 2100)   # years shown in the diagnostics figure (all are printed)
 RUN_END = max(TARGET_YEARS) + 1   # last timebound needed: annual mean of Y needs timebound Y+1
 # Cut range spans the radio options (India Passiivinen = -80 %, i.e. +80 % growth) up to the
