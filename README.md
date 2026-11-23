@@ -188,7 +188,7 @@ Open the printed URL in a browser (or project it for the class). For slider mode
 | `requirements.txt` | Pinned pip dependencies (used by Streamlit Community Cloud) |
 | `environment-dev.yml` | Conda environment for development |
 | `data/screened_configs.csv` | Screened member shortlist; regenerate with `precompute_configs.py` |
-| `data/fair_calibrate/` | fair-calibrate v1.6.0 files used by the model (copied from ghgbudgets) |
+| `data/fair_calibrate/` | Calibration and forcing files of [fair-calibrate](https://github.com/chrisroadmap/fair-calibrate) v1.6.0 (Smith et al. 2024) used by the model |
 | `CREDITS.md` | Data sources, citations and third-party licences |
 
 ## Licence and credits

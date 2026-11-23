@@ -2,9 +2,10 @@
 """
 FaIR v2.2 wrapper for the climate negotiations classroom demo.
 
-Adapted from ghgbudgets/fair_runs.py (createConstrainedRuns).
-Uses the fair-calibrate v1.6.0 constrained posterior (841 members, FaIR 2.2.4),
-vendored in data/fair_calibrate/ (see the README there).
+Uses the fair-calibrate v1.6.0 constrained posterior (841 members, FaIR 2.2.4;
+Smith et al. 2024, https://github.com/chrisroadmap/fair-calibrate),
+vendored in data/fair_calibrate/ (see the README there). The FaIR setup follows
+fair-calibrate's input/constraining/07_constrained-ssp-projections.py (tag v1.6.0).
 
 A single config is drawn randomly from a pre-screened shortlist
 (data/screened_configs.csv, produced by precompute_configs.py).
@@ -311,9 +312,12 @@ def setup_fair(config_ids, year_end: int, base_ssp: str = BASE_SSP) -> FAIR:
     """
     Configure a FaIR instance for the given posterior members (not yet run).
 
-    Follows ghgbudgets/fair_runs.py:createConstrainedRuns (fair-calibrate v1.6.0). The single
-    scenario is named 'game'; its emissions are those of base_ssp and the caller may overwrite
-    CO2 FFI. Runs are stochastic with each member's stored seed.
+    Follows fair-calibrate v1.6.0 input/constraining/07_constrained-ssp-projections.py:
+    the same species (Irrigation removed, land-use forcing calculated), harmonized SSP
+    emissions, scaled solar and volcanic forcing, posterior parameters and initial
+    conditions. Differences: only the given members, one scenario (named 'game', with the
+    emissions of base_ssp; the caller may overwrite CO2 FFI) and a variable end year.
+    Runs are stochastic with each member's stored seed.
 
     Parameters
     ----------

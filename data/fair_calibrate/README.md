@@ -1,7 +1,9 @@
 # fair-calibrate v1.6.0 files used by the game
 
-Copied unchanged from `ghgbudgets/data/fair_calibrate` (ghgbudgets commit 3a22065, 2026-08-11),
-which holds the fair-calibrate v1.6.0 output for FaIR 2.2.4. Only the files the game needs are kept.
+Files from [fair-calibrate](https://github.com/chrisroadmap/fair-calibrate) v1.6.0, the calibrated
+and constrained parameter set for FaIR 2.2.4 by Chris Smith and co-authors (Smith et al. 2024,
+<https://doi.org/10.5194/gmd-17-8569-2024>; calibration data on Zenodo,
+<https://doi.org/10.5281/zenodo.7112539>). Only the files the game needs are kept.
 
 | File | Used for |
 |---|---|
