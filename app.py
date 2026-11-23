@@ -232,10 +232,10 @@ IMPACTS = {
         'color': '#65C06C',
         'global': [
             ('🌊', 'sea_level', {'fi': '~40 cm', 'en': '~40 cm'}, 25),
-            ('🪸', 'corals',    {'fi': '70–90 % häviää', 'en': '70–90% lost'}, 35),
+            ('🐠', 'corals',    {'fi': '70–90 % häviää', 'en': '70–90% lost'}, 35),
             ('🧊', 'arctic',    {'fi': 'kerran sadassa vuodessa', 'en': 'once in a hundred years'}, 15),
             ('🦋', 'habitat',   {'fi': '~6 % hyönteisistä', 'en': '~6% of insects'}, 20),
-            ('☀️', 'heatwaves', {'fi': '4× yleisempiä kuin 1800-luvulla',
+            ('🥵', 'heatwaves', {'fi': '4× yleisempiä kuin 1800-luvulla',
                                  'en': '4× more frequent than in the 1800s'}, 20),
         ],
         'finland': [
@@ -250,11 +250,11 @@ IMPACTS = {
         'color': '#FFA73E',
         'global': [
             ('🌊', 'sea_level', {'fi': '~50 cm', 'en': '~50 cm'}, 45),
-            ('🪸', 'corals',    {'fi': '>99 % häviää — käytännössä kaikki',
+            ('🐠', 'corals',    {'fi': '>99 % häviää — käytännössä kaikki',
                                  'en': '>99% lost — practically all'}, 75),
             ('🧊', 'arctic',    {'fi': 'kerran kymmenessä vuodessa', 'en': 'once in ten years'}, 40),
             ('🦋', 'habitat',   {'fi': '~18 % hyönteisistä', 'en': '~18% of insects'}, 45),
-            ('☀️', 'heatwaves', {'fi': '5,6× yleisempiä', 'en': '5.6× more frequent'}, 45),
+            ('🥵', 'heatwaves', {'fi': '5,6× yleisempiä', 'en': '5.6× more frequent'}, 45),
         ],
         'finland': [
             ('🌡️', 'fi_warming', {'fi': '+3–4 °C', 'en': '+3–4 °C'}, 45),
@@ -268,10 +268,10 @@ IMPACTS = {
         'color': '#E2824A',
         'global': [
             ('🌊', 'sea_level', {'fi': '~80 cm', 'en': '~80 cm'}, 65),
-            ('🪸', 'corals',    {'fi': 'käytännössä hävinneet', 'en': 'practically gone'}, 90),
+            ('🐠', 'corals',    {'fi': 'käytännössä hävinneet', 'en': 'practically gone'}, 90),
             ('🧊', 'arctic',    {'fi': 'useimpina vuosina', 'en': 'in most years'}, 70),
             ('🦋', 'habitat',   {'fi': '~49 % hyönteisistä', 'en': '~49% of insects'}, 70),
-            ('☀️', 'heatwaves', {'fi': '~8× yleisempiä', 'en': '~8× more frequent'}, 70),
+            ('🥵', 'heatwaves', {'fi': '~8× yleisempiä', 'en': '~8× more frequent'}, 70),
         ],
         'finland': [
             ('🌡️', 'fi_warming', {'fi': '+4,5–6 °C', 'en': '+4.5–6 °C'}, 65),
@@ -285,10 +285,10 @@ IMPACTS = {
         'color': '#E24444',
         'global': [
             ('🌊', 'sea_level', {'fi': '~100 cm+', 'en': '~100 cm+'}, 85),
-            ('🪸', 'corals',    {'fi': 'hävinneet', 'en': 'gone'}, 100),
+            ('🐠', 'corals',    {'fi': 'hävinneet', 'en': 'gone'}, 100),
             ('🧊', 'arctic',    {'fi': 'joka vuosi', 'en': 'every year'}, 95),
             ('🦋', 'habitat',   {'fi': '>35 % lajeista', 'en': '>35% of species'}, 85),
-            ('☀️', 'heatwaves', {'fi': '9,4× yleisempiä', 'en': '9.4× more frequent'}, 90),
+            ('🥵', 'heatwaves', {'fi': '9,4× yleisempiä', 'en': '9.4× more frequent'}, 90),
         ],
         'finland': [
             ('🌡️', 'fi_warming', {'fi': '+6–8 °C', 'en': '+6–8 °C'}, 85),

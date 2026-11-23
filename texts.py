@@ -240,7 +240,7 @@ TEXTS = {
         'en': '✨ Climate no. {number} has been drawn! Its climate sensitivity will be revealed only '
               'at the end of the game.',
     },
-    'dr_simulate': {'fi': '🔬 Simuloi {start}–{end} →', 'en': '🔬 Simulate {start}–{end} →'},
+    'dr_simulate': {'fi': '▶️ Simuloi {start}–{end} →', 'en': '▶️ Simulate {start}–{end} →'},
 
     # --- screen: simulation 2040 ---
     's1_title': {
@@ -303,8 +303,8 @@ TEXTS = {
 
     # --- screen: observations 2040 ---
     'ob_title': {
-        'fi': '🔭 Havainnot {year}: mitä lämpeneminen kertoo ilmastostamme?',
-        'en': '🔭 Observations {year}: what does the warming tell us about our climate?',
+        'fi': '🛰️ Havainnot {year}: mitä lämpeneminen kertoo ilmastostamme?',
+        'en': '🛰️ Observations {year}: what does the warming tell us about our climate?',
     },
     'ob_intro': {
         'fi': 'Vuoden {year} lopussa tiedämme, kuinka paljon meidän ilmastomme lämpeni. '
@@ -378,7 +378,7 @@ TEXTS = {
     'ob_next': {'fi': 'Tutkimus etenee →', 'en': 'Research advances →'},
 
     # --- screen: research ---
-    're_title': {'fi': '🧪 Tutkimus etenee', 'en': '🧪 Research advances'},
+    're_title': {'fi': '📄 Tutkimus etenee', 'en': '📄 Research advances'},
     're_intro': {
         'fi': 'Vuoteen {year} mennessä tutkijat ovat oppineet lisää esimerkiksi muinaisilmastoista '
               'ja pilvien käyttäytymisestä. Uusi tutkimus arvioi meidän ilmastomme herkkyydeksi '
@@ -411,8 +411,8 @@ TEXTS = {
 
     # --- screen: phase 2 (net-zero years) ---
     'p2_title': {
-        'fi': '🎯 Milloin kukin alue saavuttaa nollapäästöt?',
-        'en': '🎯 When does each region reach net-zero emissions?',
+        'fi': '📉 Milloin kukin alue saavuttaa nollapäästöt?',
+        'en': '📉 When does each region reach net-zero emissions?',
     },
     'p2_intro': {
         'fi': 'Jokainen ryhmä päättää, milloin **oman alueensa** fossiiliset CO₂-päästöt laskevat '
@@ -431,7 +431,7 @@ TEXTS = {
         'en': '{year}: {em} GtCO₂/yr → 0 by **{nz}**',
     },
     'p2_estimate': {'fi': 'Arvio näillä päätöksillä', 'en': 'Estimate with these decisions'},
-    'p2_button': {'fi': '🔬 Laske huippulämpötila', 'en': '🔬 Calculate the peak temperature'},
+    'p2_button': {'fi': '▶️ Laske huippulämpötila', 'en': '▶️ Calculate the peak temperature'},
     'p2_stale': {
         'fi': 'Valinnat muuttuivat – laskekaa simulaatio uudelleen nähdäksenne tuloksen.',
         'en': 'The choices have changed – run the simulation again to see the result.',
