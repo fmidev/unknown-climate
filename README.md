@@ -7,6 +7,29 @@ grade 7 upwards, including adults. It is meant to be led by a teacher or other p
 younger players need more help from the presenter.
 Built with [Streamlit](https://streamlit.io/) and the [FaIR v2.2](https://docs.fairmodel.net/) climate model.
 
+**Play in the browser: <https://unknown-climate.streamlit.app/>** (Finnish and English, no
+installation or sign-in needed).
+
+![Pledges screen: each region picks a fossil CO₂ pledge for 2040, with the initial estimate of end-of-century warming](docs/screenshots/pledges.png)
+
+![Simulation to 2040: observed temperatures continue with the drawn climate model's run, judged against the Paris limits on a 20-year mean](docs/screenshots/simulation_2040.png)
+
+## For teachers
+
+One computer is enough: the presenter runs the game on a projector, and the class is split into
+five groups, one per region, that negotiate and tell the presenter their choices. A whole game
+goes through eight screens, from the pledges to the reveal of the hidden climate; see
+[What it does](#what-it-does). The players need no devices or accounts.
+
+- **Open the app a few minutes before class.** If nobody has used it for 12 hours, Streamlit
+  Community Cloud puts it to sleep, and waking it up takes about a minute.
+- **Choose the language** on the first page; you can switch between Finnish and English at any
+  time (top right) without losing the choices.
+- **For a demo without groups**, slider mode lets you set any emission level
+  (see [Presenter options](#presenter-options)).
+- **Talk about the limits afterwards.** The [Caveats](#caveats) are a good starting point for a
+  discussion on what a model can and cannot tell us.
+
 ## What it does
 
 Students are divided into five groups, each representing a major emitting region:
@@ -108,7 +131,11 @@ standard server logs, as described in the
 [Streamlit privacy notice](https://streamlit.io/privacy-policy). If the app is shared only with
 invited viewers, they sign in to Streamlit, so Streamlit knows their email address.
 
-## Setup
+## Local installation (optional)
+
+You do not need to install anything to play: the game runs in the browser at
+<https://unknown-climate.streamlit.app/>. The steps below are only for running the app on your
+own computer, for example to work offline or to change the code.
 
 ### Prerequisites
 

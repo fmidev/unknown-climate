@@ -8,6 +8,7 @@ __pycache__/
 # Other files
 *.pptx
 *.png
+!docs/screenshots/*.png
 *.claude*
 # Raw downloads (derived files in data/ are committed)
 data/raw/
