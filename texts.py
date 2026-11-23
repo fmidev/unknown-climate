@@ -74,12 +74,12 @@ TEXTS = {
               '({stage}):',
     },
     'exceed_label': {'fi': 'yli {level} °C', 'en': 'above {level} °C'},
-    'exceed_delta': {'fi': '{change} %-yks. alkuarviosta', 'en': '{change} pp vs initial estimate'},
+    'exceed_delta': {'fi': '{change} %-yks. alkuarviosta', 'en': '{change} percentage points vs initial estimate'},
 
     # --- impacts page ---
     'imp_title': {'fi': '🌡️ Mitä lämpeneminen tarkoittaa?', 'en': '🌡️ What does warming mean?'},
     'imp_intro': {
-        'fi': 'Valitse lämpenemistaso nähdäksesi vaikutukset maailmalla ja Suomessa.  \n'
+        'fi': 'Valitkaa lämpenemistaso nähdäksenne vaikutukset maailmalla ja Suomessa.  \n'
               '*(Verrattuna esiteolliseen aikaan 1850–1900)*',
         'en': 'Choose a warming level to see the impacts around the world and in Finland.  \n'
               '*(Compared with the pre-industrial period 1850–1900)*',
@@ -90,7 +90,7 @@ TEXTS = {
     'imp_finland': {'fi': '🇫🇮 Suomessa', 'en': '🇫🇮 In Finland'},
     'imp_decisions_both': {
         'fi': 'lupauksillanne ja nollapäästövuosillanne',
-        'en': 'pledges and net-zero years',
+        'en': 'pledges and zero-emission years',
     },
     'imp_decisions_pledges': {'fi': 'lupauksillanne', 'en': 'pledges'},
     'imp_message': {
@@ -129,7 +129,7 @@ TEXTS = {
         'fi': 'Päästöt {year} (sama vuosimuutos jatkuu)',
         'en': 'Emissions {year} (same annual change continues)',
     },
-    'pathway_title': {'fi': 'Päästöpolku alueittain', 'en': 'Emission pathway by region'},
+    'pathway_title': {'fi': 'Päästöpolku alueittain', 'en': 'Emissions pathways by region'},
 
     # --- screen: pledges ---
     'pl_title': {
@@ -155,7 +155,7 @@ TEXTS = {
         'en': '🔒 The pledges are locked because the climate has already been drawn. '
               'To change them, start over.',
     },
-    'pl_subheader': {'fi': 'Aseta jokaisen alueen lupaus', 'en': "Set each region's pledge"},
+    'pl_subheader': {'fi': 'Asettakaa jokaisen alueen lupaus', 'en': "Set each region's pledge"},
     'pl_slider_caption': {
         'fi': 'Päästöjen muutos vuodesta {base_year} vuoteen {year}: '
               '−100 % = nollapäästöt, 0 % = ennallaan, + = päästöt kasvavat.',
@@ -183,12 +183,14 @@ TEXTS = {
     },
     'pl_assumption': {
         'fi': 'Oletus {year} jälkeen: kunkin alueen päästöt muuttuvat vuosittain yhtä paljon kuin '
-              'vuosina {base_year}–{year} (laskevat korkeintaan nollaan; kasvavat pysyvät ennallaan).',
+              'vuosina {base_year}–{year} (laskevat päästöt pysähtyvät nollaan, kasvavat jäävät vuoden '
+              '{year} tasolle).',
         'en': "Assumption after {year}: each region's emissions keep changing by the same amount per "
-              'year as in {base_year}–{year} (falling emissions stop at zero; growing ones stay level).',
+              'year as in {base_year}–{year} (falling emissions stop at zero; growing ones stay at the '
+              '{year} level).',
     },
     'pl_next': {
-        'fi': 'Katsotaan alkuarvio tarkemmin →',
+        'fi': 'Katsotaan alkuarviota tarkemmin →',
         'en': 'Take a closer look at the initial estimate →',
     },
 
@@ -206,11 +208,11 @@ TEXTS = {
               'all agree with the observations so far.',
     },
     'pr_ecs': {
-        'fi': '**Ilmastoherkkyys** kertoo, kuinka paljon ilmasto lopulta lämpenisi, jos ilman '
+        'fi': '**Ilmastoherkkyys** kertoo, kuinka paljon ilmasto lopulta lämpenisi, jos ilmakehän '
               'CO₂-pitoisuus kaksinkertaistuisi pysyvästi. Mitä suurempi ilmastoherkkyys, sitä enemmän '
               'samat päästöt lämmittävät.',
-        'en': '**Climate sensitivity** tells how much the climate would eventually warm if the CO₂ '
-              'concentration of the air doubled permanently. The higher the climate sensitivity, the '
+        'en': '**Climate sensitivity** tells us how much the climate would eventually warm if the '
+              'atmospheric CO₂ concentration doubled permanently. The higher the climate sensitivity, the '
               'more the same emissions warm the planet.',
     },
     'pr_info': {
@@ -228,11 +230,13 @@ TEXTS = {
     },
     'dr_intro': {
         'fi': 'Arvotaan yksi {n} mahdollisesta ilmastosta. Se on pelin "todellinen" ilmasto: '
-              '**sen ilmastoherkkyys on salaisuus**, ja teidän on pääteltävä sitä havainnoista, '
-              'kuten tutkijat tekevät oikeassakin maailmassa.',
+              '**sen ilmastoherkkyys on tuntematon**. Päättäjinä teidän on toimittava epävarmuuden '
+              'vallitessa ja hyödynnettävä tutkijoiden arvioita, jotka tarkentuvat havaintojen ja '
+              'tutkimuksen myötä.',
         'en': 'One of the {n} possible climates is drawn. It is the "real" climate of the game: '
-              '**its climate sensitivity is a secret**, and you have to work it out from observations, '
-              'just as scientists do in the real world.',
+              '**its climate sensitivity is unknown**. As decision-makers, you have to act under '
+              "uncertainty, using scientists' assessments, which improve as observations and research "
+              'accumulate.',
     },
     'dr_button': {'fi': '🎲 Arvo ilmasto', 'en': '🎲 Draw a climate'},
     'dr_success': {
@@ -252,14 +256,14 @@ TEXTS = {
     's1_centred': {'fi': 'Keskiarvo {first}–{last}', 'en': 'Mean {first}–{last}'},
     's1_centred_help': {
         'fi': '95 %:n väli {lo}–{hi} °C, koska vuodet {p0}–{p1} on arvioitu',
-        'en': '95% range {lo}–{hi} °C, because the years {p0}–{p1} are projected',
+        'en': '95% range {lo}–{hi} °C, because the years {p0}–{p1} are estimated',
     },
     's1_below15': {
-        'fi': '✅ 20 vuoden jakson {first}–{last} keskilämpötila on alle 1,5 °C:n tavoitteen!',
+        'fi': '✅ 20 vuoden jakson {first}–{last} keskilämpötila alittaa 1,5 °C:n tason!',
         'en': '✅ The 20-year mean temperature {first}–{last} is below the 1.5 °C goal!',
     },
     's1_between': {
-        'fi': '⚠️ 20 vuoden jakson {first}–{last} keskilämpötila on yli 1,5 °C mutta alle 2 °C:n '
+        'fi': '⚠️ 20 vuoden jakson {first}–{last} keskilämpötila on yli 1,5 °C, mutta alle 2 °C:n '
               'rajan.',
         'en': '⚠️ The 20-year mean temperature {first}–{last} is above 1.5 °C but below the 2 °C limit.',
     },
@@ -283,9 +287,9 @@ TEXTS = {
     },
     's1_split': {
         'fi': '💡 Huomatkaa: vuosi {year} ({single} °C) ja 20 vuoden keskiarvo ({centred} °C) ovat '
-              'eri puolilla 1,5 °C:n rajaa. Yksi vuosi ei vielä kerro, onko raja ylitetty.',
+              'eri puolilla 1,5 °C:n tasoa. Yksi vuosi ei vielä kerro, onko taso ylitetty.',
         'en': '💡 Notice: the year {year} ({single} °C) and the 20-year mean ({centred} °C) are on '
-              'different sides of the 1.5 °C limit. A single year does not yet tell whether the limit '
+              'different sides of the 1.5 °C level. A single year does not tell us whether the level '
               'has been crossed.',
     },
     's1_real': {
@@ -317,18 +321,19 @@ TEXTS = {
               'Climates whose warming fits this measurement become more likely.',
     },
     'range_narrowed': {
-        'fi': 'kapeni **{old} → {new} °C** ({pct} %)',
-        'en': 'narrowed **{old} → {new} °C** ({pct}%)',
+        # {old} and {new} are widths of the 95 % range, not temperatures; say so explicitly
+        'fi': 'kapeni (leveys **{old} → {new} °C**, −{pct} %)',
+        'en': 'narrowed (width **{old} → {new} °C**, −{pct}%)',
     },
     'range_widened': {
-        'fi': 'leveni **{old} → {new} °C**',
-        'en': 'widened **{old} → {new} °C**',
+        'fi': 'leveni (leveys **{old} → {new} °C**)',
+        'en': 'widened (width **{old} → {new} °C**)',
     },
     'ob_ranges': {
         'fi': 'Ilmastoherkkyyden 95 %:n väli {ecs_change}, vuoden {year} tienoilla odotettavan '
               'lämpenemisen {t_change}. ',
-        'en': 'The 95% range of climate sensitivity {ecs_change}, that of warming around {year} '
-              '{t_change}. ',
+        'en': 'The 95% range of climate sensitivity {ecs_change}, and the range for warming around '
+              '{year} {t_change}. ',
     },
     'ob_widened': {
         'fi': 'Havainto ei kaventanut väliä vaan siirsi arviota kohti {direction} ilmastoherkkyyttä '
@@ -348,8 +353,8 @@ TEXTS = {
         'fi': 'Tällä kertaa havainnot kertoivat paljon, koska ilmastomme lämpeni selvästi {direction} '
               'kuin ilmastot keskimäärin ({prior_mean} °C). Yleensä arvio tarkentuu tässä vaiheessa '
               'vain vähän.',
-        'en': 'This time the observations told us a lot, because our climate warmed clearly {direction} '
-              'than the climates on average ({prior_mean} °C). Usually the estimate sharpens only a '
+        'en': 'This time the observations told us a lot, because our climate warmed noticeably {direction} '
+              'than the average climate ({prior_mean} °C). Usually the estimate sharpens only a '
               'little at this stage.',
     },
     'ob_less': {'fi': 'vähemmän', 'en': 'less'},
@@ -360,11 +365,11 @@ TEXTS = {
     },
     'ob_expander_body': {
         'fi': '- Lähivuosikymmenten lämpeneminen riippuu ennen kaikkea **lyhyen aikavälin vasteesta** '
-              '(TCR): meret lämpenevät hitaasti, eikä ilmasto ole ehtinyt tasapainoon. ECS kuvaa '
-              'lopullista tasapainoa.\n'
+              '(TCR): meret lämpenevät hitaasti, eikä ilmasto ole ehtinyt tasapainoon. Ilmastoherkkyys '
+              'kuvaa lopullista tasapainoa.\n'
               '- **Pienhiukkaset (aerosolit)** viilentävät ilmastoa, ja niiden vaikutus tunnetaan '
               'huonosti. Herkkä ilmasto, jossa on voimakas aerosolien viilennys, lämpenee lähes '
-              'yhtä paljon kuin vähemmän herkkä, jolla viilennys on heikko.\n'
+              'yhtä paljon kuin vähemmän herkkä, jossa viilennys on heikko.\n'
               '- Sama pätee oikeaan maailmaan: havaittu lämpeneminen rajaa ilmastoherkkyyttä vain löyhästi.',
         'en': '- Warming over the next decades depends above all on the **short-term response** '
               '(TCR): the oceans warm slowly, and the climate has not had time to reach equilibrium. '
@@ -391,7 +396,7 @@ TEXTS = {
         'fi': 'Alkuarvioon verrattuna ilmastoherkkyyden 95 %:n väli {ecs_change}, vuoden {year} '
               'tienoilla odotettavan lämpenemisen {t_change}.',
         'en': 'Compared with the initial estimate, the 95% range of climate sensitivity {ecs_change}, '
-              'that of warming around {year} {t_change}.',
+              'and the range for warming around {year} {t_change}.',
     },
     're_expander_title': {
         'fi': 'Miksi lämpenemisen arvio ei tarkentunut yhtä paljon kuin ilmastoherkkyyden?',
@@ -407,24 +412,24 @@ TEXTS = {
               'vegetation take up. Even if climate sensitivity were known precisely, warming would '
               'still be uncertain.',
     },
-    're_next': {'fi': 'Vaihe 2: Nollapäästövuodet →', 'en': 'Phase 2: Net-zero years →'},
+    're_next': {'fi': 'Vaihe 2: Nollapäästövuodet →', 'en': 'Phase 2: Zero-emission years →'},
 
     # --- screen: phase 2 (net-zero years) ---
     'p2_title': {
         'fi': '📉 Milloin kukin alue saavuttaa nollapäästöt?',
-        'en': '📉 When does each region reach net-zero emissions?',
+        'en': '📉 When does each region reach zero emissions?',
     },
     'p2_intro': {
         'fi': 'Jokainen ryhmä päättää, milloin **oman alueensa** fossiiliset CO₂-päästöt laskevat '
-              'nollaan. Metaani, maankäytön päästöt ja muut kasvihuonekaasut seuraavat nykyistä '
+              'nollaan. Metaanipäästöt, maankäytön CO₂-päästöt ja muut päästöt seuraavat nykyistä '
               'kehitystä (SSP2-4.5). Käyttäkää päätöksessä sitä, mitä nyt tiedätte ilmastostanne.',
         'en': 'Each group decides when the fossil CO₂ emissions of **its own region** fall to zero. '
-              'Methane, land-use emissions and other greenhouse gases follow current trends '
+              'Methane emissions, land-use CO₂ emissions and other emissions follow current trends '
               '(SSP2-4.5). Use what you now know about your climate when you decide.',
     },
     'p2_subheader': {
-        'fi': 'Valitse nollapäästövuosi alueittain',
-        'en': 'Choose a net-zero year for each region',
+        'fi': 'Valitkaa nollapäästövuosi alueittain',
+        'en': 'Choose a zero-emission year for each region',
     },
     'p2_region_caption': {
         'fi': '{year}: {em} GtCO₂/v → 0 vuoteen **{nz}**',
@@ -442,7 +447,7 @@ TEXTS = {
         'en': '✅ Peak warming (20-year mean) stays below 1.5 °C – we stay within the goal!',
     },
     'p2_between': {
-        'fi': '⚠️ Lämpenemisen huippu (20 vuoden keskiarvo) on yli 1,5 °C mutta alle 2 °C.',
+        'fi': '⚠️ Lämpenemisen huippu (20 vuoden keskiarvo) on yli 1,5 °C, mutta alle 2 °C.',
         'en': '⚠️ Peak warming (20-year mean) is above 1.5 °C but below 2 °C.',
     },
     'p2_above20': {
@@ -469,10 +474,13 @@ TEXTS = {
         'en': 'Run the Phase 2 simulation first.',
     },
     'rv_intro': {
-        'fi': 'Meidän ilmastomme herkkyys oli **{ecs} °C**, ja teidän päätöksillänne se lämpeni '
-              'vuoden {year} tienoilla (keskiarvo {first}–{last}) **{temp} °C**.',
-        'en': 'The sensitivity of our climate was **{ecs} °C**, and with your decisions it warmed by '
-              '**{temp} °C** around {year} (mean of {first}–{last}).',
+        # {temp} is warming relative to 1850–1900, not since the start of the game
+        'fi': 'Meidän ilmastomme herkkyys oli **{ecs} °C**, ja teidän päätöksillänne ilmasto oli '
+              'lämmennyt vuoden {year} tienoilla (keskiarvo {first}–{last}) **{temp} °C** '
+              'esiteolliseen aikaan verrattuna.',
+        'en': 'The sensitivity of our climate was **{ecs} °C**, and with your decisions our climate '
+              'had warmed by **{temp} °C** compared with pre-industrial times around {year} '
+              '(mean of {first}–{last}).',
     },
     'rv_ecs_name': {'fi': 'Ilmastoherkkyys', 'en': 'Climate sensitivity'},
     'rv_temp_name': {'fi': 'Lämpeneminen {first}–{last}', 'en': 'Warming {first}–{last}'},
@@ -487,7 +495,8 @@ TEXTS = {
               '({lo}–{hi} °C) ulkopuolelle. Näin käy noin kerran 20 pelistä – '
               'se kuuluu epävarmuuteen.',
         'en': '😮 {name}: the true value {value} °C fell outside the 95% range of the estimate '
-              '({lo}–{hi} °C). This happens in about one game in 20 – it is part of uncertainty.',
+              '({lo}–{hi} °C). This happens in about one game in 20 – that is part of the '
+              'uncertainty.',
     },
     'rv_lesson': {
         'fi': '**Mitä tästä opimme?** Emme voi tietää etukäteen, kuinka herkkä ilmasto on. Päätökset on '

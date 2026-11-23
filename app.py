@@ -198,8 +198,8 @@ TEMP_ANNOTATIONS = [
                       'en': 'corals disappear\nBaltic Sea no longer freezes'}),
     (3.0, '#E2824A', {'fi': 'Jäämeri jäätön useimpina kesinä\nLapin porotalous uhattuna',
                       'en': 'Arctic Ocean ice-free most summers\nLapland reindeer herding threatened'}),
-    (4.0, '#E24444', {'fi': 'helleaallot 9,4×\netelä-Suomi käytännössä lumeton',
-                      'en': 'heatwaves 9.4×\nsouthern Finland practically snowless'}),
+    (4.0, '#E24444', {'fi': 'helleaallot ~9× yleisempiä\nEtelä-Suomi käytännössä lumeton',
+                      'en': 'heatwaves ~9× more frequent\nsouthern Finland practically snowless'}),
 ]
 
 REGION_COLORS = {
@@ -254,7 +254,7 @@ IMPACTS = {
                                  'en': '>99% lost — practically all'}, 75),
             ('🧊', 'arctic',    {'fi': 'kerran kymmenessä vuodessa', 'en': 'once in ten years'}, 40),
             ('🦋', 'habitat',   {'fi': '~18 % hyönteisistä', 'en': '~18% of insects'}, 45),
-            ('🥵', 'heatwaves', {'fi': '5,6× yleisempiä', 'en': '5.6× more frequent'}, 45),
+            ('🥵', 'heatwaves', {'fi': '~6× yleisempiä', 'en': '~6× more frequent'}, 45),
         ],
         'finland': [
             ('🌡️', 'fi_warming', {'fi': '+3–4 °C', 'en': '+3–4 °C'}, 45),
@@ -288,12 +288,12 @@ IMPACTS = {
             ('🐠', 'corals',    {'fi': 'hävinneet', 'en': 'gone'}, 100),
             ('🧊', 'arctic',    {'fi': 'joka vuosi', 'en': 'every year'}, 95),
             ('🦋', 'habitat',   {'fi': '>35 % lajeista', 'en': '>35% of species'}, 85),
-            ('🥵', 'heatwaves', {'fi': '9,4× yleisempiä', 'en': '9.4× more frequent'}, 90),
+            ('🥵', 'heatwaves', {'fi': '~9× yleisempiä', 'en': '~9× more frequent'}, 90),
         ],
         'finland': [
             ('🌡️', 'fi_warming', {'fi': '+6–8 °C', 'en': '+6–8 °C'}, 85),
             ('🏙️', 'helsinki',   {'fi': 'kuin Wien tänään', 'en': 'like Vienna today'}, 85),
-            ('❄️', 'snow',       {'fi': 'kadonnut muisto', 'en': 'a thing of the past'}, 95),
+            ('❄️', 'snow',       {'fi': 'pelkkä muisto', 'en': 'a thing of the past'}, 95),
             ('⛷️', 'ski',        {'fi': 'ei enää taloudellisesti kannattavaa',
                                   'en': 'no longer economically viable'}, 90),
             ('🦌', 'reindeer',   {'fi': 'romahtamassa', 'en': 'collapsing'}, 90),
@@ -399,13 +399,13 @@ SCREEN_TITLES = {
     'sim1':     {'fi': 'Simulaatio 2040', 'en': 'Simulation 2040'},
     'obs2040':  {'fi': 'Havainnot 2040',  'en': 'Observations 2040'},
     'research': {'fi': 'Tutkimus etenee', 'en': 'Research advances'},
-    'phase2':   {'fi': 'Nollapäästöt',    'en': 'Net-zero emissions'},
+    'phase2':   {'fi': 'Nollapäästöt',    'en': 'Zero emissions'},
     'reveal':   {'fi': 'Paljastus',       'en': 'Reveal'},
 }
 # Estimate stages: (label, colour). A stage is shown from its own screen onwards.
 STAGE_STYLE = {
     'prior':    ({'fi': 'Alkuarvio', 'en': 'Initial estimate'}, '#8A9099'),
-    'obs2040':  ({'fi': '2025–2040 havaintojen jälkeen', 'en': 'After observations 2025–2040'}, '#5A84E2'),
+    'obs2040':  ({'fi': 'Vuosien 2025–2040 havaintojen jälkeen', 'en': 'After the 2025–2040 observations'}, '#5A84E2'),
     'research': ({'fi': 'Tutkimuksen jälkeen', 'en': 'After research'}, '#E26D91'),
 }
 
@@ -1545,7 +1545,7 @@ def _language_picker():
     st.title('🌍 Tuntematon ilmasto · Unknown Climate')
     st.markdown('Tuntematon ilmasto – ilmastoneuvottelupeli epävarmuuden keskellä  \n'
                 'Unknown Climate: a climate negotiation game under uncertainty')
-    st.markdown('Valitse kieli · Choose the language')
+    st.markdown('Valitse kieli · Choose your language')
     col_fi, col_en, _ = st.columns([1, 1, 2])
     if col_fi.button('🇫🇮 Suomi', type='primary', width='stretch'):
         st.session_state['lang'] = 'fi'
