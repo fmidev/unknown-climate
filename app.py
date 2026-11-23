@@ -504,7 +504,6 @@ def _simulate_phase1(cuts):
     """
     config_id = st.session_state['config_id']
     temp = annual_series(run_fair_game(cuts, netzero_years=None, config_id=config_id))
-    st.session_state['temp_phase1'] = temp
 
     # Update 1: the drawn member's OBS_WINDOW mean (from the FaIR run) + observation error.
     # The emulator reproduces the FaIR window mean to ~0.001 °C, so the reference is consistent.
@@ -540,6 +539,12 @@ def _simulate_phase1(cuts):
     }
     st.session_state['temp_phase2'] = None
     st.session_state['phase2_netzero_used'] = None
+    # Stored last: the draw screen treats temp_phase1 as "the simulation is done". The simulation
+    # screen is unlocked here, not only by the _goto after the spinner, because a click during
+    # the FaIR run interrupts the script when the spinner closes and the _goto never runs; the
+    # forward button then still leads on.
+    st.session_state['temp_phase1'] = temp
+    st.session_state['furthest'] = max(st.session_state['furthest'], SCREENS.index('sim1'))
 
 
 def _stage_weights(upto_screen):
@@ -1059,6 +1064,10 @@ def _show_temperature_animation(key,drawn_until=ANIM_START - 1, **chart_kwargs):
     played = st.session_state['animations_played']
     temp_da, year_end = chart_kwargs['temp_da'], chart_kwargs['year_end']
     if key not in played:
+        # Marked as played before the frames: a click during the animation (Next, Replay,
+        # Start over below the chart) interrupts this run, and the next run should act on the
+        # click at once instead of playing the whole animation again first.
+        played.add(key)
         _scroll_to_centre(box, box_key)
         years = [int(y) for y in temp_da.year.values if drawn_until < y <= year_end]
         step = max(1, int(np.ceil(len(years) / ANIM_MAX_FRAMES)))
@@ -1069,7 +1078,6 @@ def _show_temperature_animation(key,drawn_until=ANIM_START - 1, **chart_kwargs):
             placeholder.altair_chart(_temperature_chart(upto_year=upto_year, final=False, **chart_kwargs),
                                      width='stretch')
             time.sleep(ANIM_SECONDS / len(frames))
-        played.add(key)
     placeholder.altair_chart(_temperature_chart(upto_year=year_end, final=True, **chart_kwargs),
                              width='stretch')
     if st.button(t('replay'), key=f'replay_{key}'):
@@ -1166,14 +1174,14 @@ def _cut_input(region: str, option_indices: dict, disabled: bool = False) -> flo
     In slider mode (?mode=sliders URL parameter): free slider of the emissions change 2025→2040 in %
     (negative = reduction), the same sign as the radio labels; returns the cut fraction.
     In radio mode (default): 4-option radio from EMISSION_OPTIONS.
-    Updates option_indices[region] in place. disabled locks the input (after the draw).
+    Radio mode updates option_indices[region] in place. disabled locks the input (after the draw).
     """
     if USE_SLIDERS:
-        # Initialise the slider from whichever radio option is currently selected.
+        # Start from the stored cut: Streamlit drops a widget's state on any run that does not
+        # show it (other screens, the impacts page), and the slider is then rebuilt from `value`.
         # Range: from net zero by 2040 (-100 %) to the largest growth among the options
         # (India Passiivinen, +80 %), so every radio option can be reached.
-        stored_idx = option_indices.get(region, 0)
-        change_pct = int(round(-EMISSION_OPTIONS[region][stored_idx][1] * 100))
+        change_pct = int(round(-st.session_state['cuts'][region] * 100))
         change_pct = st.slider(
             _region_name(region), min_value=-100, max_value=80,
             value=change_pct, step=5, format='%+d %%' if lang() == 'fi' else '%+d%%',
@@ -1196,17 +1204,15 @@ def _nz_input(region: str, min_nz: int, netzero_indices: dict) -> int:
     """
     Return the chosen net-zero year for a region.
     In slider mode: free slider starting at min_nz.
-    In radio mode: 3 options anchored to min_nz via NETZERO_OFFSETS.
-    Updates netzero_indices[region] in place.
+    In radio mode: options anchored to min_nz via NETZERO_OFFSETS.
+    Radio mode updates netzero_indices[region] in place.
     """
     if USE_SLIDERS:
-        current = netzero_indices.get(region, 1)
-        nz_opts = [(lbl, min_nz + off) for lbl, off in NETZERO_OFFSETS]
-        default_yr = nz_opts[current][1]
-        max_nz = max(yr for _, yr in nz_opts)
+        # Start from the stored year, so the choice survives other screens (see _cut_input)
+        max_nz = min_nz + max(off for _, off in NETZERO_OFFSETS)
         return st.slider(
             _region_name(region), min_value=min_nz, max_value=max_nz,
-            value=max(default_yr, min_nz), step=5,
+            value=st.session_state['netzero_years'][region], step=5,
             key=f'slider_nz_{region}',
         )
     nz_opts = [(lbl, min_nz + off) for lbl, off in NETZERO_OFFSETS]
