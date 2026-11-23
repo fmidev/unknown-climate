@@ -55,6 +55,11 @@ ANIM_START      = 2026   # first year of the simulated line, animated year by ye
                          # record (IGCC) ends with 2025, so the model is drawn only after it.
 ANIM_SECONDS    = 5.0    # duration of the year-by-year line animation (increase to slow down)
 ANIM_MAX_FRAMES = 60     # chart updates sent to the browser; years are grouped beyond this
+# Below this chart width (px, phones in portrait) the temperature chart has no room for the impact
+# labels in its right margin: the margin would take the whole plot. The labels are then left out
+# and the legends stacked.
+# Evaluated in the browser (Vega containerSize()), since the server does not know the screen.
+NARROW_CHART_PX = 600
 OBS_COLOR       = '#555B66'   # observed GMST: dark grey on the light theme
 MODEL_COLOR     = '#5A84E2'
 CENTRED_COLOR   = '#D9961A'   # darker than the old yellow so it reads on white too
@@ -867,7 +872,8 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
         y_max = max(y_max, centred[2] + 0.3)
     x_scale = alt.Scale(domain=[year_start, x_end], nice=False, zero=False)
     y_scale = alt.Scale(domain=[y_min, y_max], nice=False, zero=False)
-    x_enc = alt.X('x:Q', scale=x_scale, axis=alt.Axis(title=t('axis_year'), format='d'))
+    x_axis = alt.Axis(title=t('axis_year'), format='d')
+    x_enc = alt.X('x:Q', scale=x_scale, axis=x_axis)
     # Vega has no Finnish locale here, so the decimal comma is put in with a label expression
     label_expr = "format(datum.value, '.1f')"
     if lang() == 'fi':
@@ -928,9 +934,10 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
     layers += [
         alt.Chart(levels).mark_rule(strokeDash=[5, 4], strokeWidth=1.3).encode(
             y=alt.Y('T:Q', scale=y_scale), color=alt.Color('väri:N', scale=None)),
-        # Impact labels in the right margin (outside the plot, see the padding below)
-        alt.Chart(levels).mark_text(align='left', baseline='middle', dx=8, fontSize=11,
-                                    lineBreak='\n').encode(
+        # Impact labels in the right margin (outside the plot, see the padding below), left out
+        # on narrow screens (the dashed lines stay; the impacts page lists the impacts)
+        alt.Chart(levels).transform_filter(f'containerSize()[0] >= {NARROW_CHART_PX}').mark_text(
+            align='left', baseline='middle', dx=8, fontSize=11, lineBreak='\n').encode(
             x=alt.datum(x_end), y=alt.Y('T:Q', scale=y_scale),
             text='vaikutus:N', color=alt.Color('tekstiväri:N', scale=None)),
         alt.Chart(paris).mark_text(align='left', baseline='bottom', dx=4, dy=-3, fontSize=11,
@@ -978,7 +985,9 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
             layers.append(alt.Chart(label).mark_text(
                 align=align, dx=4 if align == 'left' else -4, dy=dy, fontSize=13,
                 fontWeight='bold', color=CENTRED_COLOR).encode(
-                x=alt.X(f'{x_field}:Q', scale=x_scale, axis=None), y=y_enc, text='nimi:N'))
+                # Same axis as the other layers: axis=None here would drop the x axis of the whole
+                # layered chart
+                x=alt.X(f'{x_field}:Q', scale=x_scale, axis=x_axis), y=y_enc, text='nimi:N'))
 
     if final and centred is not None:
         # The bar covers annual years CENTRED_WINDOW, i.e. x from its first year to one past
@@ -997,9 +1006,17 @@ def _temperature_chart(temp_da, year_start, year_end, upto_year, final,
                 x=x_enc, x2='x2:Q', y=y_enc),
         ]
 
-    # Right padding holds the impact labels (the centred mean is shown as a metric below)
+    # Right padding holds the impact labels (the centred mean is shown as a metric below), except
+    # on narrow screens, where the labels are left out
+    padding = alt.ExprRef(f'{{left: 5, top: 10, bottom: 5, '
+                          f'right: containerSize()[0] < {NARROW_CHART_PX} ? 10 : 210}}')
+    # The two legends (band; lines) sit side by side in the bottom-right corner. On narrow screens
+    # they would run over the data, so they are stacked there instead.
+    legend_layout = alt.ExprRef(f"containerSize()[0] < {NARROW_CHART_PX} "
+                                f"? {{'bottom-right': {{direction: 'vertical'}}}} : {{}}")
     return (alt.layer(*layers).resolve_scale(color='independent')
-            .properties(height=440, padding={'left': 5, 'top': 10, 'bottom': 5, 'right': 210}))
+            .properties(height=440, padding=padding)
+            .configure_legend(layout=legend_layout))
 
 
 def _scroll_to_centre(parent, box_key):
