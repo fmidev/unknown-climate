@@ -1340,8 +1340,11 @@ def _screen_sim1():
     gmst = _load_gmst()
     obs_last = float(gmst.loc[np.floor(gmst['year']) == ANIM_START - 1, 'gmst'].iloc[0])
 
+    # The key ends up in the page (CSS class, element ids), so it must not contain the member ID:
+    # with the public screened_configs.csv that would reveal the hidden ECS. Start over clears
+    # animations_played, so a new game animates again without it.
     _show_temperature_animation(
-        f'sim1-{st.session_state["config_id"]}',
+        'sim1',
         # From 1960 (most of the warming, little flat early record) so that the 2030-2049
         # centred-mean bar and the single year 2040 are large enough to compare
         temp_da=temp, year_start=1960, year_end=CHECKPOINT,
@@ -1494,7 +1497,7 @@ def _screen_phase2():
     st.subheader(t('p2_results'))
     netzero_key = '-'.join(str(netzero_years[r]) for r in REGION_EMISSIONS_BASE_GTCO2)
     _show_temperature_animation(
-        f'phase2-{st.session_state["config_id"]}-{netzero_key}',
+        f'phase2-{netzero_key}',    # no member ID in the key, see _screen_sim1
         temp_da=temp2, year_start=1900, year_end=display_end,
         show_peak=True, drawn_until=CHECKPOINT,
     )

@@ -24,8 +24,9 @@ publishing tasks are tracked in `TODO.md` (untracked, local only).
   Never push to `personal` unless asked.
 - Dependencies: `requirements.txt` (pinned, pip) is what Streamlit Cloud installs; Python 3.11.
   Add new dependencies there (pinned) and to `environment-dev.yml`. Pin transitive packages
-  when a new release breaks the app: `starlette==1.0.0` is pinned because starlette 1.10 made
-  `st.pyplot` images return HTTP 500 under Streamlit 1.57.
+  when a new release breaks the app: `starlette==1.3.1` is pinned (first release without the
+  advisories of 1.0.0) because newer starlette breaks Streamlit 1.57's file serving (1.9: static
+  files fail, 1.10: `st.pyplot` images return HTTP 500).
 - Test changes to dependencies with a clean pip venv from a fresh clone, and click through a whole
   game checking that matplotlib images load (not only page headings).
 
