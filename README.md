@@ -35,6 +35,25 @@ An impacts page (what 1.5–4 °C means globally and in Finland, with the probab
 level under the players' decisions) can be opened from every screen. All temperatures are
 annual means relative to 1850–1900.
 
+## Presenter options
+
+The game has two input modes, chosen by the address the app is opened with:
+
+- **Option mode (default, for playing with a class).** Each group picks one of four named
+  pledges for its region: *Passive*, *Cautious*, *Strong* or *Maximal*, each shown with its
+  2025→2040 emissions change. In Phase 2 each group picks one of four net-zero timings:
+  *Fastest possible*, *Moderate (+25 yr)*, *Slow (+75 yr)* or *No commitment (+150 yr)*,
+  counted from the earliest net-zero year the region's 2040 emissions allow (emissions fall
+  by at most 3 % of the 2025 level per year).
+- **Slider mode (for presenter demos).** Add `?mode=sliders` to the address, e.g.
+  `http://localhost:8501/?mode=sliders` (works on the deployed app too). Each region gets a
+  free slider for its 2025→2040 emissions change, from −100 % to +80 % in steps of 5 %, and in
+  Phase 2 a slider for the net-zero year (5-year steps over the same range as the options).
+  Useful for showing how warming responds to any emission level, not just the four options.
+
+The mode stays as long as the address keeps the parameter; open the address without it to
+return to option mode (this starts a new game).
+
 ## Climate model
 
 Each game session draws one configuration at random from a pre-screened shortlist of
@@ -128,9 +147,8 @@ Re-run if you change the screening criteria. The CSV is committed so the app sta
 streamlit run app.py
 ```
 
-Open the printed URL in a browser (or project it for the class). For the instructor mode with
-free sliders instead of four options per region, add `?mode=sliders` to the URL
-(e.g. `http://localhost:8501/?mode=sliders`).
+Open the printed URL in a browser (or project it for the class). For slider mode, add
+`?mode=sliders` to the URL (see [Presenter options](#presenter-options)).
 
 ## Files
 
