@@ -57,7 +57,7 @@ TEXTS = {
     # --- estimate histograms and exceedance probabilities ---
     'est_ecs_title': {'fi': 'Ilmastoherkkyys', 'en': 'Climate sensitivity (ECS)'},
     'est_temp_title': {
-        'fi': 'Lämpeneminen {first}–{last} keskimäärin',
+        'fi': 'Lämpenemisen keskiarvo {first}–{last}',
         'en': 'Mean warming {first}–{last}',
     },
     'est_true_value': {'fi': ' oikea arvo {value}', 'en': ' true value {value}'},
@@ -216,9 +216,9 @@ TEXTS = {
               'more the same emissions warm the planet.',
     },
     'pr_info': {
-        'fi': '👆 Tämä on **alkuarvio**. Harmaa jakauma pysyy näkyvissä koko pelin ajan, '
+        'fi': '👆 Nämä ovat **alkuarviot**. Harmaat jakaumat pysyvät näkyvissä koko pelin ajan, '
               'jotta näette, miten arvio tarkentuu.',
-        'en': '👆 This is the **initial estimate**. The grey distribution stays visible for the whole '
+        'en': '👆 These are the **initial estimates**. The grey distributions stay visible for the whole '
               'game, so you can see how the estimate becomes sharper.',
     },
     'pr_next': {'fi': 'Arvotaan meidän ilmastomme →', 'en': 'Draw our climate →'},
